@@ -1,8 +1,10 @@
 ﻿namespace Application.Test;
+using Common.Configuration;
 
 [TestFixture]
-public class TestFixtureBase
+public abstract class TestFixtureBase
 {
+    protected static readonly AppConfig AppConfig = ConfigurationManager.AppConfig;
     [OneTimeSetUp]
     public void OnTestFixtureSetUp()
     {

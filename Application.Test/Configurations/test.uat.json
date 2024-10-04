@@ -1,2 +1,30 @@
 {
+  "Application": "Spotify",
+  "Version": "1.0.0",
+
+  "Url": {
+    "Base": "https://open.spotify.com/"
+  },
+
+  "Browsers": {
+    "Chrome" : "true",
+    "Firefox" : "true",
+    "Edge" : "false"
+  },
+
+  "BrowserOptions": {
+    "Maximize": "true"
+  },
+
+  "UseEnvironmentVars":"false",
+
+  "EnvironmentVars": {
+    "Username": "Spotify_Username_EnvVar",
+    "Password": "Spotify_Password_EnvVar"
+  },
+
+  "Credentials": {
+    "Username": "",
+    "Password": ""
+  }
 }
