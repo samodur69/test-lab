@@ -3,6 +3,7 @@ using Common.Configuration;
 using Common.Logger;
 using Common.Logger.Configuration;
 
+
 [TestFixture]
 public abstract class TestFixtureBase
 {
