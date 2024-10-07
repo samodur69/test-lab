@@ -26,5 +26,10 @@
   "Credentials": {
     "Username": "",
     "Password": ""
+  },
+
+  "Logging": {
+    "Type": "Console",
+    "FileName": "Logs/logs.txt"
   }
 }

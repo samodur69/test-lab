@@ -19,6 +19,9 @@ public class ConfigurationManager
 
     private static AppConfig ParseConfig(IConfigurationRoot Config)
     {
+        var loggerType = Config["Logging:Type"];
+        var loggerFileName = Config["Logging:FileName"];
+
         var useEnvVar = bool.Parse(Config["UseEnvironmentVars"]);
         var maximize = bool.Parse(Config["BrowserOptions:Maximize"]);
 
@@ -46,7 +49,10 @@ public class ConfigurationManager
             Password : password,
 
             Maximize : maximize,
-            Browsers : browserList
+            Browsers : browserList,
+
+            LoggerType : loggerType,
+            LoggerFileName : loggerFileName
         );
     }
 }

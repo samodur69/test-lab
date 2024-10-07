@@ -15,6 +15,8 @@ public class SampleTest : TestFixtureBase
         foreach(var item in AppConfig.Browsers) Console.WriteLine($"{item}");
         Console.WriteLine($"Maximized: {AppConfig.Maximize}");
 
+        Logger.LOG($"Hello! I'm {AppConfig.AppName} v{AppConfig.AppVersion}. My homepage is {AppConfig.BaseUrl}.");
+
         (2+2).Should().Be(4);
     }
 }

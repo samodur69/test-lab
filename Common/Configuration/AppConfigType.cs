@@ -8,5 +8,7 @@ public record AppConfig
     string Username,
     string Password,
     bool Maximize,
-    List<string> Browsers
+    List<string> Browsers,
+    string LoggerType,
+    string LoggerFileName
 );
