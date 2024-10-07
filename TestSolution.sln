@@ -1,14 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{3141ED81-4D14-474D-BEB7-3CB125F582E9}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35027.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{3141ED81-4D14-474D-BEB7-3CB125F582E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Model", "Application.Model\Application.Model.csproj", "{88965323-1435-4818-AA25-384E0BD09693}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.Model", "Application.Model\Application.Model.csproj", "{88965323-1435-4818-AA25-384E0BD09693}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Business", "Application.Business\Application.Business.csproj", "{3AD73909-4F70-419E-A775-35101CA70BBD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.Business", "Application.Business\Application.Business.csproj", "{3AD73909-4F70-419E-A775-35101CA70BBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Test", "Application.Test\Application.Test.csproj", "{01F972EE-1EB8-4291-9E36-30F2B702E0A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.Test", "Application.Test\Application.Test.csproj", "{01F972EE-1EB8-4291-9E36-30F2B702E0A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.Test.Api", "Application.Test.Api\Application.Test.Api.csproj", "{02B3BFFA-E5F2-4E34-89C0-A4009CA12DE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.Test.Api", "Application.Test.Api\Application.Test.Api.csproj", "{02B3BFFA-E5F2-4E34-89C0-A4009CA12DE2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.Driver", "Application.Driver\Application.Driver.csproj", "{20D38EC3-06EE-4AD3-BE49-8F0296A68415}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +41,15 @@ Global
 		{02B3BFFA-E5F2-4E34-89C0-A4009CA12DE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02B3BFFA-E5F2-4E34-89C0-A4009CA12DE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02B3BFFA-E5F2-4E34-89C0-A4009CA12DE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20D38EC3-06EE-4AD3-BE49-8F0296A68415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20D38EC3-06EE-4AD3-BE49-8F0296A68415}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20D38EC3-06EE-4AD3-BE49-8F0296A68415}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20D38EC3-06EE-4AD3-BE49-8F0296A68415}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F24CFCF5-5FD7-421E-94F2-22D2EEFB51F4}
 	EndGlobalSection
 EndGlobal

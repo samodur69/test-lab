@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Application.Driver\Application.Driver.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 

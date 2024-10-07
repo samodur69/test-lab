@@ -1,6 +1,7 @@
 ﻿namespace Application.Test;
 using Common.Configuration;
 
+
 [TestFixture]
 public abstract class TestFixtureBase
 {
