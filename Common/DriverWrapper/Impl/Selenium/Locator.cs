@@ -7,7 +7,7 @@ public class SeleniumLocator : ILocator
         Mechanism = mechanism;
         Criteria = criteria;
     }
-    public LocatorTypes Mechanism { get; } = LocatorTypes.NONE;
+    public LocatorTypes Mechanism { get; } = LocatorTypes.CSS_SELECTOR;
     public string Criteria { get; } = "";
     public ILocator Id(string idToFind) => new SeleniumLocator(LocatorTypes.ID, idToFind);
     public ILocator LinkText(string linkTextToFind) => new SeleniumLocator(LocatorTypes.LINK_TEXT, linkTextToFind);
