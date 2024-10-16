@@ -1,35 +1,30 @@
 {
-  "Application": "Spotify",
-  "Version": "1.0.0",
-
-  "Url": {
-    "Base": "https://open.spotify.com/"
-  },
-
-  "Browsers": {
-    "Chrome" : "true",
-    "Firefox" : "true",
-    "Edge" : "false"
-  },
-
-  "BrowserOptions": {
-    "Maximize": "true"
-  },
-
-  "UseEnvironmentVars":"false",
-
-  "EnvironmentVars": {
-    "Username": "Spotify_Username_EnvVar",
-    "Password": "Spotify_Password_EnvVar"
-  },
-
-  "Credentials": {
-    "Username": "",
-    "Password": ""
-  },
-
-  "Logging": {
-    "Type": "Console",
-    "FileName": "Logs/logs.txt"
-  }
+    "Url": {
+        "Base": "https://www.spotify.com",
+        "Login": "/login",
+        "Signup": "/signup"
+    },
+    "Browser": {
+        "Type": "Chrome",
+        "Maximize": true
+    },
+    "EnvironmentVars": {
+        "Enable": false,
+        "Username": "Spotify_Username_EnvVar",
+        "Password": "Spotify_Password_EnvVar"
+    },
+    "Credentials": {
+        "Username": "Username",
+        "Password": "Password"
+    },
+    "Driver": { 
+        "Type": "Selenium",
+        "WaitTimeout": 5000,
+        "PollingRate": 500,
+        "ScreenshotPath": "Screenshots"
+    },
+    "Logging": {
+        "Type": "Console",
+        "FileName": "Logs/logs.txt"
+    }
 }

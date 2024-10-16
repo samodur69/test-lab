@@ -2,13 +2,42 @@ namespace Common.Configuration;
 
 public record AppConfig
 (
-	string AppName,
-    string AppVersion,
-	string BaseUrl,
+	Url Url,
+    Credentials Credentials,
+    BrowserOptions BrowserOptions,
+    DriverOptions DriverOptions,
+    LoggerOptions LoggerOptions
+);
+
+public record Url
+(
+    string Base,
+	string Login,
+	string Signup
+);
+
+public record DriverOptions
+(
+    string Type,
+    int WaitTimeout,
+    int PollingRate,
+    string ScreenshotDir
+);
+
+public record BrowserOptions
+(
+    string Browser,
+    bool Maximize
+);
+
+public record LoggerOptions
+(
+    string Type,
+    string FileName
+);
+
+public record Credentials
+(
     string Username,
-    string Password,
-    bool Maximize,
-    List<string> Browsers,
-    string LoggerType,
-    string LoggerFileName
+    string Password
 );

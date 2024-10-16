@@ -19,40 +19,48 @@ public class ConfigurationManager
 
     private static AppConfig ParseConfig(IConfigurationRoot Config)
     {
+        var driverType = Config["Driver:Type"];
+        var driverTimeout = int.Parse(Config["Driver:WaitTimeout"]);
+        var driverPollingRate = int.Parse(Config["Driver:PollingRate"]);
+        var screenshotDir = Config["Driver:ScreenshotPath"];
+
         var loggerType = Config["Logging:Type"];
         var loggerFileName = Config["Logging:FileName"];
 
-        var useEnvVar = bool.Parse(Config["UseEnvironmentVars"]);
-        var maximize = bool.Parse(Config["BrowserOptions:Maximize"]);
-
+        var useEnvVar = bool.Parse(Config["EnvironmentVars:Enable"]);
         var userName = useEnvVar ? Config["EnvironmentVars:Username"] : Config["Credentials:Username"];
         var password = useEnvVar ? Config["EnvironmentVars:Password"] : Config["Credentials:Password"];
 
-        var browserList = ((Func<List<string>>)(() => {
-            var list = new List<string>();
-
-            foreach (var browser in Config.GetSection("Browsers").GetChildren()) {
-                if(browser.Value == null) continue;
-                if(!bool.Parse(browser.Value)) continue;
-
-                list.Add(browser.Key);
-            }
-            return list;
-        }))();
+        var maximize = bool.Parse(Config["Browser:Maximize"]);
 
         return new(
-            AppName    : Config["Application"],
-            AppVersion : Config["Version"],
-            BaseUrl    : Config["Url:Base"],
+            Url : new(
+                Base: Config["Url:Base"], 
+                Login: Config["Url:Login"], 
+                Signup: Config["Url:Signup"]
+            ),
+            
+            Credentials : new(
+                Username : userName, 
+                Password : password
+            ),
+            
+            BrowserOptions : new(
+                Browser : Config["Browser:Type"], 
+                Maximize : maximize
+            ),
 
-            Username : userName,
-            Password : password,
+            DriverOptions : new(
+                Type : driverType,
+                WaitTimeout : driverTimeout,
+                PollingRate : driverPollingRate,
+                ScreenshotDir : screenshotDir
+            ),
 
-            Maximize : maximize,
-            Browsers : browserList,
-
-            LoggerType : loggerType,
-            LoggerFileName : loggerFileName
+            LoggerOptions : new(
+                Type : loggerType, 
+                FileName : loggerFileName
+            )
         );
     }
 }
