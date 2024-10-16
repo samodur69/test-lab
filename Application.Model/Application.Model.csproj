@@ -8,8 +8,11 @@
 
   <ItemGroup>
     <Folder Include="Controls\" />
-    <Folder Include="PageElements\" />
-    <Folder Include="Pages\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Application.DriverWrapper\Application.DriverWrapper.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 
 </Project>

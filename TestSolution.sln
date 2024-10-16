@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.Test", "Applica
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.Test.Api", "Application.Test.Api\Application.Test.Api.csproj", "{02B3BFFA-E5F2-4E34-89C0-A4009CA12DE2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.Driver", "Application.Driver\Application.Driver.csproj", "{20D38EC3-06EE-4AD3-BE49-8F0296A68415}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,10 +39,6 @@ Global
 		{02B3BFFA-E5F2-4E34-89C0-A4009CA12DE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02B3BFFA-E5F2-4E34-89C0-A4009CA12DE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02B3BFFA-E5F2-4E34-89C0-A4009CA12DE2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{20D38EC3-06EE-4AD3-BE49-8F0296A68415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{20D38EC3-06EE-4AD3-BE49-8F0296A68415}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{20D38EC3-06EE-4AD3-BE49-8F0296A68415}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{20D38EC3-06EE-4AD3-BE49-8F0296A68415}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
