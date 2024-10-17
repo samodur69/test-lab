@@ -38,4 +38,9 @@ public abstract class TestFixtureBase
         //     Home.TakeScreenshot();
         Home.CloseBrowser();
     }
+
+    [OneTimeTearDown]
+    public void OnTestFixtureTearDown()
+    {
+    }
 }
