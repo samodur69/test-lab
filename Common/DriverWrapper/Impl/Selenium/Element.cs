@@ -33,4 +33,8 @@ public class SeleniumElement(IWebElement element) : IElement
 
     public IElement FindElementByCss(string css) => FindElement(new SeleniumLocator(LocatorTypes.CSS_SELECTOR, css));
     public IElement FindElementByXPath(string xpath) => FindElement(new SeleniumLocator(LocatorTypes.XPATH, xpath));
+    public string GetAttribute(string attributeName) => element.GetAttribute(attributeName);
+    public string GetCssValue(string propertyName) => element.GetCssValue(propertyName);
+    public string GetDomAttribute(string attributeName) => element.GetDomAttribute(attributeName);
+    public string GetDomProperty(string propertyName) => element.GetDomProperty(propertyName);
 };

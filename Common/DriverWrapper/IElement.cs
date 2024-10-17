@@ -19,4 +19,8 @@ public interface IElement
     public IEnumerable<IElement> FindElements(ILocator locator);
     public IElement FindParent();
     public IEnumerable<IElement> FindChildElements();
+    public string GetAttribute(string attributeName);
+    public string GetCssValue(string propertyName);
+    public string GetDomAttribute(string attributeName);
+    public string GetDomProperty(string propertyName);
 };
