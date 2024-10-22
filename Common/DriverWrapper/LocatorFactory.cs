@@ -4,7 +4,7 @@ using Common.Enums;
 using Common.DriverWrapper.Configuration;
 using Common.DriverWrapper.Impl.Selenium;
 
-public class LocatorFactory
+public static class LocatorFactory
 {
     public static ILocator Create(DriverConfig driverConfig)
     {

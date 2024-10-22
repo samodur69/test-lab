@@ -2,7 +2,7 @@ namespace Common.DriverWrapper.Impl.Selenium;
 
 using OpenQA.Selenium;
 
-public class LocatorConverter
+public static class LocatorConverter
 {
     public static By Convert(ILocator locator) {
         return locator.Mechanism switch

@@ -2,12 +2,20 @@ using Common.DriverWrapper;
 
 namespace Application.Model.PageElements;
 
-public class InputControl(IElement Root) : ModelControlBase(Root)
+public class InputControl(IElement root) : BaseElementControl(root)
 {
-    public void Clear() => Root.ClearViaKeys();
-    public string Text {
-        get { return Root.Text; }
-        set { Root.SendText(value); }
+    public virtual void Clear() 
+    { 
+        Root.ClearViaKeys(); 
+        WaitForDomProperty("value", ""); 
     }
-    public void Submit() => Root.SendEnterKey();
+    public override string Text {
+        get { return Root.Text; }
+        set 
+        { 
+            Root.SendText(value); 
+            WaitForDomProperty("value", value); 
+        }
+    }
+    public virtual void Submit() => Root.SendEnterKey();
 }

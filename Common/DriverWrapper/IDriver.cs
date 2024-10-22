@@ -43,6 +43,8 @@ public interface IDriver
     ///     Returns available elements. Returns an empty collection if nothing was found.
     /// </returns>
     public IEnumerable<IElement> FindElements(ILocator locator);
+    public IEnumerable<IElement> FindElementsByCss(string css);
+    public IEnumerable<IElement> FindElementsByXPath(string xpath);
     public void GoToURL(string url);
     public string GetURL();
     public void ScrollDown(int byAmount = -1);

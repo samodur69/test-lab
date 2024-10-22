@@ -3,7 +3,7 @@ using Common.Logger.Impl;
 using Common.Logger.Configuration;
 using NLog;
 
-public class LoggerFactory
+public static class LoggerFactory
 {
     public static ILogger Create(LoggerConfig logConfig)
     {

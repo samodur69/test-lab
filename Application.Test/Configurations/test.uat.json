@@ -9,18 +9,20 @@
         "Maximize": true
     },
     "EnvironmentVars": {
-        "Enable": false,
+        "Enable": true,
         "Username": "Spotify_Username_EnvVar",
+        "Email": "Spotify_Email_EnvVar",
         "Password": "Spotify_Password_EnvVar"
     },
     "Credentials": {
         "Username": "Username",
+        "Email": "Email",
         "Password": "Password"
     },
     "Driver": { 
         "Type": "Selenium",
-        "WaitTimeout": 5000,
-        "PollingRate": 500,
+        "WaitTimeout": 10000,
+        "PollingRate": 100,
         "ScreenshotPath": "Screenshots"
     },
     "Logging": {

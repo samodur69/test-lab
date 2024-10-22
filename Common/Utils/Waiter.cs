@@ -3,7 +3,7 @@ namespace Common.Utils.Waiter;
 using System.Diagnostics;
 using Common.Configuration;
 
-public class Waiter
+public static class Waiter
 {
     private static readonly AppConfig AppConfig = ConfigurationManager.AppConfig;
 

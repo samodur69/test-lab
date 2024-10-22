@@ -3,8 +3,9 @@ namespace Common.DriverWrapper.Impl.Selenium;
 using System.Collections.ObjectModel;
 using OpenQA.Selenium;
 
-public class SeleniumElement(IWebElement element) : IElement
+public class SeleniumElement(IWebElement element, ILocator locator) : IElement
 {
+    public ILocator Locator { get; } = locator;
     private readonly string clearFieldKeyCombo = Keys.Control + "a" + Keys.Delete;
     private readonly IWebElement element = element;
     public string TagName => element.TagName;
@@ -19,16 +20,32 @@ public class SeleniumElement(IWebElement element) : IElement
     public void Submit() => element.Submit();
     public void Click() => element.Click();
 
-    public IElement FindElement(ILocator locator) => new SeleniumElement(element.FindElement(LocatorConverter.Convert(locator)));
+    public IElement FindElement(ILocator locator) => new SeleniumElement(element.FindElement(LocatorConverter.Convert(locator)), locator);
 
     public IEnumerable<IElement> FindElements(ILocator locator) => element.FindElements(LocatorConverter.Convert(locator))
-                 .Select(elem => (IElement)new SeleniumElement(elem))
+                 .Select(elem => (IElement)new SeleniumElement(elem, locator))
                  .ToList();
+    public IEnumerable<IElement> FindElementsByCss(string css) 
+    {
+        var loc = new SeleniumLocator().CssSelector(css);
+        
+        return element.FindElements(LocatorConverter.Convert(loc))
+                 .Select(elem => (IElement)new SeleniumElement(elem, loc))
+                 .ToList();
+    }
+    public IEnumerable<IElement> FindElementsByXPath(string xpath) 
+    {
+        var loc = new SeleniumLocator().XPath(xpath);
+        
+        return element.FindElements(LocatorConverter.Convert(loc))
+                 .Select(elem => (IElement)new SeleniumElement(elem, loc))
+                 .ToList();
+    }
 
-    public IElement FindParent() => new SeleniumElement(element.FindElement(By.XPath("..")));
+    public IElement FindParent() => new SeleniumElement(element.FindElement(By.XPath("parent::*")), Locator.XPath("parent::*"));
 
     public IEnumerable<IElement> FindChildElements() => element.FindElements(By.XPath("./*"))
-                 .Select(elem => (IElement)new SeleniumElement(elem))
+                 .Select(elem => (IElement)new SeleniumElement(elem, Locator.XPath("./*")))
                  .ToList();
 
     public IElement FindElementByCss(string css) => FindElement(new SeleniumLocator(LocatorTypes.CSS_SELECTOR, css));
