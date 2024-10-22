@@ -12,41 +12,29 @@ public class SeleniumDriverManager
 {
     protected static readonly ThreadLocal<IWebDriver?> driver = new();
 
-    public IWebDriver Create(WebDriverConfig settings)
+    public static IWebDriver Create(WebDriverConfig settings)
     {
         if (driver.Value != null) return driver.Value;
 
-        switch (settings.DriverType)
+        driver.Value = settings.DriverType switch
         {
-            case WebDriverTypes.CHROME:
-                driver.Value = new ChromeDriver(SetChromiumOptions(settings.DriverSettings));
-                break;
-            case WebDriverTypes.EDGE:
-                driver.Value = new EdgeDriver(SetEdgeOptions(settings.DriverSettings));
-                break;
-            case WebDriverTypes.FIREFOX:
-                driver.Value = new FirefoxDriver(SetFireFoxOptions(settings.DriverSettings));
-                break;
-            default:
-                throw new ArgumentException($"SeleniumDriverManager - browser type: {settings.DriverType} is not supported!");
-        }
+            WebDriverTypes.CHROME => new ChromeDriver(SetChromiumOptions(settings.DriverSettings)),
+            WebDriverTypes.EDGE => new EdgeDriver(SetEdgeOptions(settings.DriverSettings)),
+            WebDriverTypes.FIREFOX => new FirefoxDriver(SetFireFoxOptions(settings.DriverSettings)),
+            _ => throw new ArgumentException($"SeleniumDriverManager - browser type: {settings.DriverType} is not supported!")
+        };
+
         return driver.Value;
     }
-    public void GoToURL(string url)
-    {
-        driver.Value?.Navigate().GoToUrl(url);
-    }
-    public string? GetURL()
-    {
-        return driver.Value?.Url;
-    }
-    public void Close()
+    public static void GoToURL(string url) => driver.Value?.Navigate().GoToUrl(url);
+    public static string? GetURL() => driver.Value?.Url;
+    public static void Close()
     {
         driver.Value?.Dispose();
         driver.Value = null;
     }
 
-    private ChromeOptions SetChromiumOptions(WebBrowserSettings settings)
+    private static ChromeOptions SetChromiumOptions(WebBrowserSettings settings)
     {
         var options = new ChromeOptions();
         if (settings.Maximized)
@@ -57,7 +45,7 @@ public class SeleniumDriverManager
         return options;
     }
 
-    private FirefoxOptions SetFireFoxOptions(WebBrowserSettings settings)
+    private static FirefoxOptions SetFireFoxOptions(WebBrowserSettings settings)
     {
         var options = new FirefoxOptions();
         if (settings.Maximized)
@@ -68,7 +56,7 @@ public class SeleniumDriverManager
         return options;
     }
 
-    private EdgeOptions SetEdgeOptions(WebBrowserSettings settings)
+    private static EdgeOptions SetEdgeOptions(WebBrowserSettings settings)
     {
         var options = new EdgeOptions();
         if (settings.Maximized)

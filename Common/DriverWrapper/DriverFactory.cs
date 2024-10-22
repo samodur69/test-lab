@@ -4,7 +4,7 @@ using Common.Enums;
 using Common.DriverWrapper.Configuration;
 using Common.DriverWrapper.Impl.Selenium;
 
-public class DriverFactory
+public static class DriverFactory
 {
     public static IDriver Create(DriverConfig driverConfig)
     {

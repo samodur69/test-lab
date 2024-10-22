@@ -2,6 +2,7 @@ namespace Common.DriverWrapper;
 
 public interface IElement
 {
+    public ILocator Locator { get; }
     public string TagName { get; }
     public string Text { get; }
     public bool Enabled { get; }
@@ -16,6 +17,8 @@ public interface IElement
     public IElement FindElementByCss(string css);
     public IElement FindElementByXPath(string xpath);
     public IElement FindElement(ILocator locator);
+    public IEnumerable<IElement> FindElementsByCss(string css);
+    public IEnumerable<IElement> FindElementsByXPath(string xpath);
     public IEnumerable<IElement> FindElements(ILocator locator);
     public IElement FindParent();
     public IEnumerable<IElement> FindChildElements();

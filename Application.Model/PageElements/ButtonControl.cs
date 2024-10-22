@@ -2,7 +2,7 @@ using Common.DriverWrapper;
 
 namespace Application.Model.PageElements;
 
-public class ButtonControl(IElement Root) : ModelControlBase(Root)
+public class ButtonControl(IElement root) : BaseElementControl(root)
 {
-    public void Click() => Root.Click();
+    public virtual void Click() => Root.Click();
 }

@@ -4,6 +4,7 @@ public record AppConfig
 (
 	Url Url,
     Credentials Credentials,
+    EnvironmentVariables EnvironmentVariables,
     BrowserOptions BrowserOptions,
     DriverOptions DriverOptions,
     LoggerOptions LoggerOptions
@@ -39,5 +40,13 @@ public record LoggerOptions
 public record Credentials
 (
     string Username,
+    string Email,
     string Password
+);
+
+public record EnvironmentVariables
+(
+    string Username = "",
+    string Email = "",
+    string Password = ""
 );

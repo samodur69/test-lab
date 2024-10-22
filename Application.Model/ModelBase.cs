@@ -7,8 +7,9 @@ namespace Application.Model;
 
 public class ModelBase
 {
+    public const int DEFAULT_TIMEOUT = 1000;
     protected static readonly AppConfig AppConfig = ConfigurationManager.AppConfig;
-    private static ThreadLocal<IDriver> driver = new();
+    private static readonly ThreadLocal<IDriver> driver = new();
     protected static IDriver Driver { get => driver.Value!; }
 
     public ModelBase() {
@@ -30,7 +31,7 @@ public class ModelBase
 
     public void OpenUrl() => Driver.GoToURL(Url);
 
-    public ICollection<System.Net.Cookie> Cookies => Driver.GetCookies();
+    public static ICollection<System.Net.Cookie> Cookies => Driver.GetCookies();
 
     public static void Refresh() => Driver.Refresh();
 

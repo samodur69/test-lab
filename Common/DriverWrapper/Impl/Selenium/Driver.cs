@@ -12,17 +12,10 @@ using OpenQA.Selenium.Interactions;
 using Common.DriverWrapper;
 using System.Net;
 
-public class SeleniumDriver : IDriver
+public class SeleniumDriver(AppDriverSettings.WebDriverConfig settings) : IDriver
 {
-    private readonly AppDriver.SeleniumDriverManager webDriver;
-    private readonly IWebDriver driver;
-    private readonly AppDriverSettings.WebDriverConfig webDriverConfig;
-
-    public SeleniumDriver(AppDriverSettings.WebDriverConfig settings) {
-        webDriver = new AppDriver.SeleniumDriverManager();
-        driver = webDriver.Create(settings);
-        webDriverConfig = settings;
-    }
+    private readonly IWebDriver driver = AppDriver.SeleniumDriverManager.Create(settings);
+    private readonly AppDriverSettings.WebDriverConfig webDriverConfig = settings;
 
     public IElement FindElementByCss(string css, WaitingStrategy waitingStrategy = WaitingStrategy.NONE, string customArg0 = "", string customArg1 = "") => 
         FindWaitOnElement(new SeleniumLocator(LocatorTypes.CSS_SELECTOR, css), waitingStrategy, customArg0, customArg1);
@@ -32,10 +25,27 @@ public class SeleniumDriver : IDriver
     public IElement FindElement(ILocator locator, WaitingStrategy waitingStrategy = WaitingStrategy.NONE, string customArg0 = "", string customArg1 = "") 
         => FindWaitOnElement(locator, waitingStrategy, customArg0, customArg1);
     public IEnumerable<IElement> FindElements(ILocator locator) => driver.FindElements(LocatorConverter.Convert(locator))
-                 .Select(elem => (IElement)new SeleniumElement(elem))
+                 .Select(elem => (IElement)new SeleniumElement(elem, locator))
                  .ToList();
 
-    private IElement FindWaitOnElement(ILocator locator, WaitingStrategy waitingStrategy = WaitingStrategy.NONE, string customArg0 = "", string customArg1 = "") {
+    public IEnumerable<IElement> FindElementsByCss(string css) 
+    {
+        var locator = new SeleniumLocator().CssSelector(css);
+        
+        return driver.FindElements(LocatorConverter.Convert(locator))
+                 .Select(elem => (IElement)new SeleniumElement(elem, locator))
+                 .ToList();
+    }
+    public IEnumerable<IElement> FindElementsByXPath(string xpath) 
+    {
+        var locator = new SeleniumLocator().XPath(xpath);
+        
+        return driver.FindElements(LocatorConverter.Convert(locator))
+                 .Select(elem => (IElement)new SeleniumElement(elem, locator))
+                 .ToList();
+    }
+
+    private SeleniumElement FindWaitOnElement(ILocator locator, WaitingStrategy waitingStrategy = WaitingStrategy.NONE, string customArg0 = "", string customArg1 = "") {
         IWebElement? foundElement = null;
         Exception lastException = new();
 
@@ -73,7 +83,7 @@ public class SeleniumDriver : IDriver
                     return false;
                 }
             }
-        ) ? foundElement! : throw lastException);
+        ) ? foundElement! : throw lastException, locator);
     }
     public void GoToURL(string url) => driver.Navigate().GoToUrl(url);
     public string GetURL() => driver.Url;
@@ -124,7 +134,7 @@ public class SeleniumDriver : IDriver
     
     public void GoBack() => driver.Navigate().Back();
 
-    public void Close() => webDriver.Close();
+    public void Close() => AppDriver.SeleniumDriverManager.Close();
     private static System.Net.Cookie ConvertToNetCookie(OpenQA.Selenium.Cookie seleniumCookie)
     {
         var netCookie = new System.Net.Cookie
