@@ -31,9 +31,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="powershell -ExecutionPolicy ByPass -File .\Configurations\UpdateConfig.ps1" />
-  </Target>
+
+<!--  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">-->
+<!--    <Exec Command="powershell -ExecutionPolicy ByPass -File .\Configurations\UpdateConfig.ps1" />-->
+<!--  </Target>-->
 
 </Project>
