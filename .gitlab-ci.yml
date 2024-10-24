@@ -1,12 +1,12 @@
+ include:
+   template: Security/Secret-Detection.gitlab-ci.yml
+
 image: mcr.microsoft.com/dotnet/sdk:8.0
 
 stages:
   - build
 #   - test
 #   - deploy
-
-# include:
-#   template: Security/Secret-Detection.gitlab-ci.yml
 
 build-job:
   stage: build
