@@ -12,6 +12,7 @@ build-job:
   stage: build
   script:
     - echo "Compiling the code..."
+    - dotnet restore TestSolution.sln
     - dotnet build TestSolution.sln --configuration Release
     - echo "Compile complete."
   only:
