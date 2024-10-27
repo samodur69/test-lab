@@ -9,6 +9,7 @@ public class ModelControlBase(IElement root) : ModelBase
     public bool IsVisible{ get; } = root.Displayed;
     public bool IsEnabled{ get; } = root.Enabled;
     public bool IsSelected{ get; } = root.Selected;
+    public IElement element => Root;
     public bool ElementDomPropEqual(string prop, string value, bool condition = true, int timeout = 0) => 
         BaseElementCondition((object[]? args) => GetDomProperty((string)args![0]) == (string)args[1], condition, timeout, prop, value);
     public bool ElementAttributeEqual(string attrib, string value, bool condition = true, int timeout = 0) => 
