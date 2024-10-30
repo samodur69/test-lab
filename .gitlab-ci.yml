@@ -4,9 +4,11 @@
 image: mcr.microsoft.com/dotnet/sdk:8.0
 
 stages:
-  - build
-#   - test
-#   - deploy
+#  - Sonar check for every MR
+# if failed step - stop other steps
+#  - build (For every MR)
+#   - test (api) for MR into dev
+  #  if api pass - test UI for MR into dev
 
 build-job:
   stage: build
@@ -15,6 +17,7 @@ build-job:
     - dotnet restore TestSolution.sln
     - dotnet build TestSolution.sln --configuration Release
     - echo "Compile complete."
+    - export API {$Api}
   only:
     - dev
     - merge_requests
