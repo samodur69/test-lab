@@ -1,11 +1,25 @@
-﻿namespace Application.Api;
+﻿using Application.Api.Configuration;
+using RestAssured.Request.Builders;
+
+namespace Application.Api;
 
 [TestFixture]
 public class TestFixtureBase
 {
-    [OneTimeSetUp]
-    public void OnTestFixtureSetUp() => throw new NotImplementedException("Not Implemented Yet!");
+    protected RequestSpecification? requestSpecification;
+    protected readonly string baseUri = RestClientUtil.BaseUrl;
+    protected string accessToken;
 
-    [Test]
-    public void Test() => (1+1).Should().Be(2);
+    [OneTimeSetUp]
+    public void OneTimeSetUp()
+    {
+        RestClientUtil.InitializeClient();
+        accessToken= RestClientUtil.AccessToken;
+        requestSpecification = new RequestSpecBuilder()
+            .WithBaseUri(baseUri)
+            .WithBasePath("v1")
+            .WithOAuth2(accessToken)
+            .WithContentType("application/json")
+            .Build();
+    }
 }

@@ -9,12 +9,22 @@ public record AppConfig
     DriverOptions DriverOptions,
     LoggerOptions LoggerOptions
 );
+public record AppConfigAPI
+(
+    UrlApi Url,
+    EnvironmentVariablesApi EnvironmentVariables
+);
 
 public record Url
 (
     string Base,
 	string Login,
 	string Signup
+);
+public record UrlApi
+(
+    string Base,
+    string Token
 );
 
 public record DriverOptions
@@ -42,11 +52,17 @@ public record Credentials
     string Username,
     string Email,
     string Password
+    
 );
-
 public record EnvironmentVariables
 (
     string Username = "",
     string Email = "",
     string Password = ""
+);
+public record EnvironmentVariablesApi
+(
+    string ClientID = "",
+    string ClientSecret = "",
+    string RefreshToken = ""
 );
