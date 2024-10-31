@@ -14,11 +14,11 @@
         "Email": "Spotify_Email_EnvVar",
         "Password": "Spotify_Password_EnvVar"
     },
-    "Credentials": {
+  "Credentials": {
         "Username": "Username",
         "Email": "Email",
         "Password": "Password"
-    },
+  },
     "Driver": { 
         "Type": "Selenium",
         "WaitTimeout": 10000,

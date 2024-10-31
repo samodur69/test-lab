@@ -6,16 +6,29 @@ namespace Common.Configuration;
 public static class ConfigurationManager
 {
     public static readonly AppConfig AppConfig;
+    public static readonly AppConfigAPI AppConfigApi;
     private static readonly string configFolder = "Configurations";
     private static readonly string configName = "test.uat.json";
+    private static readonly string ApiConfigName = "api.uat.json";
 
     static ConfigurationManager()
     {
-        AppConfig = ParseConfig(new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile(Path.Combine(configFolder, configName), optional: false, reloadOnChange: true)
-            .AddEnvironmentVariables()
-            .Build());
+        if (!AppContext.BaseDirectory.Contains("Application.Test.Api")) 
+        {
+            AppConfig = ParseConfig(new ConfigurationBuilder()
+                        .SetBasePath(AppContext.BaseDirectory)
+                        .AddJsonFile(Path.Combine(configFolder, configName), optional: false, reloadOnChange: true)
+                        .AddEnvironmentVariables()
+                        .Build());
+        }
+        else
+        {
+            AppConfigApi = ParseApiConfig(new ConfigurationBuilder()
+                        .SetBasePath(AppContext.BaseDirectory)
+                        .AddJsonFile(Path.Combine(configFolder, ApiConfigName), optional: false, reloadOnChange: true)
+                        .AddEnvironmentVariables()
+                        .Build());
+        }
     }
 
     private static AppConfig ParseConfig(IConfigurationRoot Config)
@@ -78,6 +91,31 @@ public static class ConfigurationManager
                 Type : loggerType, 
                 FileName : loggerFileName
             )
+        );
+    }
+    private static AppConfigAPI ParseApiConfig(IConfigurationRoot Config)
+    {
+        string GetValue(string arg) => Config[arg] ?? "";
+
+        var useEnvVar = bool.Parse(GetValue("EnvironmentVars:Enable"));
+        var environmentVariables = new EnvironmentVariablesApi();
+
+        if (useEnvVar)
+        {
+            environmentVariables = new EnvironmentVariablesApi(
+                ClientID: GetValue("EnvironmentVars:Spotify_API_ClientID"),
+                ClientSecret: GetValue("EnvironmentVars:Spotify_API_ClientSecret"),
+                RefreshToken: GetValue("EnvironmentVars:Spotify_API_RefreshToken")
+            );
+        }
+
+        return new(
+            Url: new(
+                Base: GetValue("Url:Base"),
+                Token: GetValue("Url:Token")
+            ),
+
+            EnvironmentVariables: environmentVariables
         );
     }
 }
