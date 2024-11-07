@@ -2,8 +2,11 @@
 
 using Application.Model.Pages;
 using Application.Business.PageElements.Login;
+using Application.Business.PageElements.Library;
+using Application.Business.PageElements.Player;
 using Application.Model;
-
+using Common.Utils.ExceptionWrapper;
+using Common.Utils.Waiter;
 
 public class Home : BusinessBase
 {
@@ -54,5 +57,8 @@ public class Home : BusinessBase
     public string FilteredSongName => HomePage.SongFilterResultText;
     public string GridFilteredNames => HomePage.GridFilterResultText;
     public bool IsUserProfileButtonVisible() => HomePage.UserProfileButton.IsVisible;
-    public bool IsLoginButtonInvalid() => LoginButton.WaitInvalid(ModelBase.DEFAULT_TIMEOUT);
+    public bool IsLoginButtonInvisible() => LoginButton.WaitInvalid();
+    public void CloseCookies() => Waiter.WaitUntil(() => !ExceptionWrapper.Test(()=>HomePage.CloseCookiesButton.Click()).IsError());
+    public LibraryHolder Library => new(HomePage.LibraryHolderControl);
+    public PlayerHolder Player => new(HomePage.PlayerControl);
 }

@@ -2,6 +2,7 @@ namespace Application.Business.PageElements;
 
 using Application.Model.PageElements;
 using Application.Business;
+using Common.Utils.ExceptionWrapper;
 
 public class BaseElement(BaseElementControl model) : BusinessControlBase(model)
 {

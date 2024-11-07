@@ -4,6 +4,10 @@ using Common.Configuration;
 using Common.Logger;
 using Common.Logger.Configuration;
 using Business.Pages;
+using NUnit.Framework.Interfaces;
+using Application.Business;
+
+using System.IO;
 
 [TestFixture]
 public abstract class TestFixtureBase
@@ -14,8 +18,13 @@ public abstract class TestFixtureBase
     );
 
     [TearDown]
-    public void OnTearDown() => Home.CloseBrowser();
+    public void OnTearDown()
+    {
+        if(TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+        {
+            ReportPortal.Shared.Context.Current.Log.Info($"{TestContext.CurrentContext.Test.FullName} Attachment", "image/png", File.ReadAllBytes(BusinessBase.TakeScreenshot()));
+        } 
+        Home.CloseBrowser();
+    }
 
-    [OneTimeTearDown]
-    public void OnTestFixtureTearDown() => throw new NotImplementedException("Not Implemented Yet!");
 }

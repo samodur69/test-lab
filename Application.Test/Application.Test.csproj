@@ -29,8 +29,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Configurations\ReportPortalConfiguration.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
     <None Update="Configurations\test.uat.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ReportPortal.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

@@ -4,7 +4,7 @@ using RestAssured.Request.Builders;
 namespace Application.Api;
 
 [TestFixture]
-public class TestFixtureBase
+public abstract class TestFixtureBase
 {
     protected RequestSpecification? requestSpecification;
     protected readonly string baseUri = RestClientUtil.BaseUrl;

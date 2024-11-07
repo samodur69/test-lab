@@ -6,29 +6,16 @@ namespace Common.Configuration;
 public static class ConfigurationManager
 {
     public static readonly AppConfig AppConfig;
-    public static readonly AppConfigAPI AppConfigApi;
     private static readonly string configFolder = "Configurations";
     private static readonly string configName = "test.uat.json";
-    private static readonly string ApiConfigName = "api.uat.json";
 
     static ConfigurationManager()
     {
-        if (!AppContext.BaseDirectory.Contains("Application.Test.Api")) 
-        {
             AppConfig = ParseConfig(new ConfigurationBuilder()
                         .SetBasePath(AppContext.BaseDirectory)
                         .AddJsonFile(Path.Combine(configFolder, configName), optional: false, reloadOnChange: true)
                         .AddEnvironmentVariables()
                         .Build());
-        }
-        else
-        {
-            AppConfigApi = ParseApiConfig(new ConfigurationBuilder()
-                        .SetBasePath(AppContext.BaseDirectory)
-                        .AddJsonFile(Path.Combine(configFolder, ApiConfigName), optional: false, reloadOnChange: true)
-                        .AddEnvironmentVariables()
-                        .Build());
-        }
     }
 
     private static AppConfig ParseConfig(IConfigurationRoot Config)
@@ -50,7 +37,10 @@ public static class ConfigurationManager
             environmentVariables = new EnvironmentVariables(
                 Username : GetValue(GetValue("EnvironmentVars:Username")),
                 Email : GetValue(GetValue("EnvironmentVars:Email")),
-                Password : GetValue(GetValue("EnvironmentVars:Password"))
+                Password : GetValue(GetValue("EnvironmentVars:Password")),
+                API_ClientID : GetValue(GetValue("EnvironmentVars:API_ClientID")),
+                API_ClientSecret : GetValue(GetValue("EnvironmentVars:API_ClientSecret")),
+                API_RefreshToken : GetValue(GetValue("EnvironmentVars:API_RefreshToken"))
             );
         }
 
@@ -59,12 +49,24 @@ public static class ConfigurationManager
         var password = GetValue("Credentials:Password");
 
         var maximize = bool.Parse(GetValue("Browser:Maximize"));
+        var headless = bool.Parse(GetValue("Browser:Headless"));
+        var disableSandbox = bool.Parse(GetValue("Browser:DisableSandbox"));
+        var disableGPU = bool.Parse(GetValue("Browser:DisableGPU"));
+        var disableSharedMemory = bool.Parse(GetValue("Browser:DisableSharedMemory"));
+        var enableWindowSize = bool.Parse(GetValue("Browser:EnableWindowSize"));
+        var windowSizeX = int.Parse(GetValue("Browser:WindowSizeX"));
+        var windowSizeY = int.Parse(GetValue("Browser:WindowSizeY"));
+        var debuggerAddress = GetValue("Browser:DebuggerAddress");
+        var debuggerPort = int.Parse(GetValue("Browser:DebuggerPort"));
+        var remoteDebuggingPort = int.Parse(GetValue("Browser:RemoteDebuggingPort"));
 
         return new(
             Url : new(
                 Base: GetValue("Url:Base"), 
                 Login: GetValue("Url:Login"), 
-                Signup: GetValue("Url:Signup")
+                Signup: GetValue("Url:Signup"),
+                API_Base: GetValue("Url:API_Base"),
+                API_Token: GetValue("Url:API_Token")
             ),
             
             Credentials : new(
@@ -77,7 +79,17 @@ public static class ConfigurationManager
             
             BrowserOptions : new(
                 Browser : GetValue("Browser:Type"), 
-                Maximize : maximize
+                Maximize : maximize,
+                Headless : headless,
+                DisableSandbox : disableSandbox,
+                DisableGPU : disableGPU,
+                DisableSharedMemory : disableSharedMemory,
+                EnableWindowSize : enableWindowSize,
+                WindowSizeX : windowSizeX,
+                WindowSizeY : windowSizeY,
+                DebuggerAddress : debuggerAddress,
+                DebuggerPort: debuggerPort,
+                RemoteDebuggingPort: remoteDebuggingPort
             ),
 
             DriverOptions : new(
@@ -91,31 +103,6 @@ public static class ConfigurationManager
                 Type : loggerType, 
                 FileName : loggerFileName
             )
-        );
-    }
-    private static AppConfigAPI ParseApiConfig(IConfigurationRoot Config)
-    {
-        string GetValue(string arg) => Config[arg] ?? "";
-
-        var useEnvVar = bool.Parse(GetValue("EnvironmentVars:Enable"));
-        var environmentVariables = new EnvironmentVariablesApi();
-
-        if (useEnvVar)
-        {
-            environmentVariables = new EnvironmentVariablesApi(
-                ClientID: GetValue("EnvironmentVars:Spotify_API_ClientID"),
-                ClientSecret: GetValue("EnvironmentVars:Spotify_API_ClientSecret"),
-                RefreshToken: GetValue("EnvironmentVars:Spotify_API_RefreshToken")
-            );
-        }
-
-        return new(
-            Url: new(
-                Base: GetValue("Url:Base"),
-                Token: GetValue("Url:Token")
-            ),
-
-            EnvironmentVariables: environmentVariables
         );
     }
 }

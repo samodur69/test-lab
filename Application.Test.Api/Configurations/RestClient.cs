@@ -14,13 +14,13 @@ public static class RestClientUtil
     private static RestClient client;
     public static RestClient Client => client;
 
-    static readonly AppConfigAPI AppConfig = ConfigurationManager.AppConfigApi;
+    static readonly AppConfig AppConfig = ConfigurationManager.AppConfig;
 
-    private static string baseUrl = AppConfig.Url.Base;
-    private static string TokenUrl = AppConfig.Url.Token;
-    private static string clientID = AppConfig.EnvironmentVariables.ClientID;
-    private static string clientSecret = AppConfig.EnvironmentVariables.ClientSecret;
-    private static string _refreshToken = AppConfig.EnvironmentVariables.RefreshToken;
+    private static string baseUrl = AppConfig.Url.API_Base;
+    private static string TokenUrl = AppConfig.Url.API_Token;
+    private static string clientID = AppConfig.EnvironmentVariables.API_ClientID;
+    private static string clientSecret = AppConfig.EnvironmentVariables.API_ClientSecret;
+    private static string _refreshToken = AppConfig.EnvironmentVariables.API_RefreshToken;
     private static string _accessToken;
     private static string user_id;
     public static string BaseUrl => baseUrl;
