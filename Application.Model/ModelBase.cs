@@ -22,7 +22,17 @@ public class ModelBase
                    AppConfig.DriverOptions.PollingRate,
                    AppConfig.DriverOptions.ScreenshotDir,
                     new WebBrowserSettings(
-                        Maximized : AppConfig.BrowserOptions.Maximize
+                        Maximized : AppConfig.BrowserOptions.Maximize,
+                        Headless : AppConfig.BrowserOptions.Headless,
+                        DisableSandbox : AppConfig.BrowserOptions.DisableSandbox,
+                        DisableGPU : AppConfig.BrowserOptions.DisableGPU,
+                        DisableSharedMemory : AppConfig.BrowserOptions.DisableSharedMemory,
+                        EnableWindowSize : AppConfig.BrowserOptions.EnableWindowSize,
+                        WindowSizeX : AppConfig.BrowserOptions.WindowSizeX,
+                        WindowSizeY : AppConfig.BrowserOptions.WindowSizeY,
+                        DebuggerAddress : AppConfig.BrowserOptions.DebuggerAddress,
+                        DebuggerPort : AppConfig.BrowserOptions.DebuggerPort,
+                        RemoteDebuggingPort : AppConfig.BrowserOptions.RemoteDebuggingPort
                     )
                 )));
     }

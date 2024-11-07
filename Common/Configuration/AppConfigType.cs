@@ -9,22 +9,14 @@ public record AppConfig
     DriverOptions DriverOptions,
     LoggerOptions LoggerOptions
 );
-public record AppConfigAPI
-(
-    UrlApi Url,
-    EnvironmentVariablesApi EnvironmentVariables
-);
 
 public record Url
 (
     string Base,
 	string Login,
-	string Signup
-);
-public record UrlApi
-(
-    string Base,
-    string Token
+	string Signup,
+    string API_Base,
+    string API_Token
 );
 
 public record DriverOptions
@@ -38,7 +30,17 @@ public record DriverOptions
 public record BrowserOptions
 (
     string Browser,
-    bool Maximize
+    bool Maximize,
+    bool Headless,
+    bool DisableSandbox,
+    bool DisableGPU,
+    bool DisableSharedMemory,
+    bool EnableWindowSize,
+    int WindowSizeX,
+    int WindowSizeY,
+    string DebuggerAddress,
+    int DebuggerPort,
+    int RemoteDebuggingPort
 );
 
 public record LoggerOptions
@@ -58,11 +60,8 @@ public record EnvironmentVariables
 (
     string Username = "",
     string Email = "",
-    string Password = ""
-);
-public record EnvironmentVariablesApi
-(
-    string ClientID = "",
-    string ClientSecret = "",
-    string RefreshToken = ""
+    string Password = "",
+    string API_ClientID = "",
+    string API_ClientSecret = "",
+    string API_RefreshToken = ""
 );

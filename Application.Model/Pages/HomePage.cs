@@ -2,7 +2,10 @@ namespace Application.Model.Pages;
 
 using Application.Model.PageElements;
 using Application.Model.PageElements.Login;
+using Application.Model.PageElements.Library;
+
 using Common.Configuration;
+using Application.Model.PageElements.Player;
 
 public class HomePage : ModelBase
 {
@@ -12,6 +15,8 @@ public class HomePage : ModelBase
     private const string homeTabCSS = "div[class='main-view-container']";
 
     //Navigation Bar
+    private const string CookieCloseBtnCSS = "button[class^='onetrust-close']";
+    private const string OneTrustBannerCSS = "div[id='onetrust-banner-sdk']";
     private const string LoginBtnCSS = "button[data-testid='login-button']";
     private const string UserProfileBtnCSS = "button[data-testid='user-widget-link']";
     private const string SearchInputCSS = "input[data-testid='search-input']";
@@ -32,6 +37,8 @@ public class HomePage : ModelBase
     private const string SongsFilterResultCSS = "div[data-testid='tracklist-row']";
     private const string SongsFilterResultTextCSS = "div[data-encore-id='text']";
     private const string GridFilterResultTextCSS = "p[data-encore-id='cardTitle']";
+    private const string LibraryLeftSideBarCSS = "div[id='Desktop_LeftSidebar_Id']";
+    private const string PlayerControlsCSS = "footer[data-testid='now-playing-bar']";
     public HomePage()
     {
         Url = AppConfig.Url.Base;
@@ -42,8 +49,8 @@ public class HomePage : ModelBase
     public static ModelControlBase YourLibrary => new(Driver.FindElementByCss(yourLibraryCSS));
     public static ModelControlBase HomeTab => new(Driver.FindElementByCss(homeTabCSS));
 
-    //Navigation Bar
-    public static LoginButtonControl LoginButton => new(NavigationBar.element.FindElementByCss(LoginBtnCSS));
+    //Navigation Bar 
+    public static LoginButtonControl LoginButton => new (Driver.FindElementByCss(LoginBtnCSS));
     public static InputControl SearchField => new(NavigationBar.element.FindElementByCss(SearchInputCSS));
     public static ButtonControl UserProfileButton => new(Driver.FindElementByCss(UserProfileBtnCSS));
 
@@ -65,4 +72,8 @@ public class HomePage : ModelBase
     public static ModelControlBase SongFilterResult => new(Driver.FindElementByCss(SongsFilterResultCSS));
     public static string SongFilterResultText => SongFilterResult.element.FindElementByCss(SongsFilterResultTextCSS).Text;
     public static string GridFilterResultText => Driver.FindElementByCss(GridFilterResultTextCSS).Text;
+    
+    public static ButtonControl CloseCookiesButton => new (Driver.FindElementByCss(OneTrustBannerCSS).FindElementByCss(CookieCloseBtnCSS));
+    public static LibraryHolderControl LibraryHolderControl => new (Driver.FindElementByCss(LibraryLeftSideBarCSS));
+    public static PlayerHolderControl PlayerControl => new (Driver.FindElementByCss(PlayerControlsCSS));
 }

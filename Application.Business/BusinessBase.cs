@@ -13,6 +13,6 @@ public class BusinessBase(ModelBase rootModel)
     public static List<System.Net.Cookie> GetCookies => [.. ModelBase.Cookies];
     public void Open() => BaseModel.OpenUrl();
     public static void Refresh() => ModelBase.Refresh();
-    public static void TakeScreenshot(string name = "") => ModelBase.TakeScreenshot(name);
+    public static string TakeScreenshot(string name = "") => ModelBase.TakeScreenshot(name);
     public static void CloseBrowser() => ModelBase.CloseBrowser();
 }

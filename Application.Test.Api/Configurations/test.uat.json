@@ -3,8 +3,8 @@
         "Base": "https://www.spotify.com",
         "Login": "/login",
         "Signup": "/signup",
-        "api_base": "https://api.spotify.com",
-        "api_token": "https://accounts.spotify.com/api"
+        "API_Base": "https://api.spotify.com",
+        "API_Token": "https://accounts.spotify.com/api"
     },
     "Browser": {
         "Type": "Chrome",

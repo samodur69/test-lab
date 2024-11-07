@@ -1,37 +1,513 @@
- include:
-   template: Security/Secret-Detection.gitlab-ci.yml
+#include:
+#   template: Security/Secret-Detection.gitlab-ci.yml
 
 image: mcr.microsoft.com/dotnet/sdk:8.0
 
-stages:
-#  - Sonar check for every MR
-# if failed step - stop other steps
-#  - build (For every MR)
-#   - test (api) for MR into dev
-  #  if api pass - test UI for MR into dev
+variables:
+#---TEST APPLICATION SECTION---
+  APPLICATION_SOLUTION_NAME    : "TestSolution.sln"
+  APPLICATION_CONFIGURATION    : "Release"
+  
+  APPLICATION_TEST_PATH        : "$CI_PROJECT_DIR/Application.Test/bin/$APPLICATION_CONFIGURATION/net8.0/Application.Test.dll"
+  APPLICATION_TEST_CONFIG_PATH : "$CI_PROJECT_DIR/Application.Test/Configurations/test.uat.json"
 
-build-job:
-  stage: build
-  script:
-    - echo "Compiling the code..."
-    - dotnet restore TestSolution.sln
-    - dotnet build TestSolution.sln --configuration Release
-    - echo "Compile complete."
-    - export API {$Api}
+  APPLICATION_API_TEST_PATH        : "$CI_PROJECT_DIR/Application.Test.Api/bin/$APPLICATION_CONFIGURATION/net8.0/Application.Test.Api.dll"
+  APPLICATION_API_TEST_CONFIG_PATH : "$CI_PROJECT_DIR/Application.Test.Api/Configurations/test.uat.json"
+#---TEST APPLICATION SECTION---
+
+#---REPORT PORTAL SECTION---
+  REPORT_PORTAL_PROJECT                 : "alexey_nadenenko1_personal"
+  REPORT_PORTAL_API_KEY                 : "$RP_Api" #"$Spotify_ReportPortal_APIKey_Secret"
+  REPORT_PORTAL_LAUNCH_NAME             : "Spotify Application UI Tests"
+  REPORT_PORTAL_LAUNCH_DESCRIPTION      : "Test Launch of Spotify Application UI Tests"
+  REPORT_PORTAL_API_LAUNCH_NAME         : "Spotify Application API Tests"
+  REPORT_PORTAL_API_LAUNCH_DESCRIPTION  : "Test Launch of Spotify Application API Tests"
+  REPORT_PORTAL_CONFIG_SRC_PATH         : "$CI_PROJECT_DIR/Application.Test/Configurations/ReportPortalConfiguration.json"
+  REPORT_PORTAL_CONFIG_TGT_PATH         : "$CI_PROJECT_DIR/Application.Test/ReportPortal.json"
+  REPORT_PORTAL_CONFIG_API_TGT_PATH     : "$CI_PROJECT_DIR/Application.Test.Api/ReportPortal.json"
+#---REPORT PORTAL SECTION---
+
+#---DRIVER SECTION---
+  DRIVER_WAIT_TIMEOUT : 10000
+  DRIVER_POLLING_RATE : 100
+#---DRIVER SECTION---
+
+#---SPOTIFY SECTION---
+  SPOTIFY_USERNAME : "$Spotify_Username_Secret"
+  SPOTIFY_EMAIL    : "$Spotify_Email_Secret"
+  SPOTIFY_PASSWORD : "$Spotify_Password_Secret"
+
+  SPOTIFY_API_CLIENT_ID     : "$Spotify_API_ClientID_Secret"
+  SPOTIFY_API_CLIENT_SECRET : "$Spotify_API_ClientSecret_Secret"
+  SPOTIFY_API_REFRESH_TOKEN : "$Spotify_API_RefreshToken_Secret"
+#---SPOTIFY SECTION---
+
+#---DOWNLOAD CACHE SECTION---
+  DL_CACHE_DIR: "dl_cache"
+#---DOWNLOAD CACHE SECTION---
+
+#---SONARQUBE SECTION---
+  SONARQUBE_SERVER_URL        : "http://localhost:9000"
+  SONARQUBE_USERNAME          : "admin"
+  SONARQUBE_PASSWORD          : "admin"
+
+  SONARQUBE_PROJECT_KEY          : "TestApplicationDotNet"
+  SONARQUBE_TOKEN_NAME           : "MyAwesomeSonarQubeToken"
+  SONARQUBE_QUALITY_PROFILE_NAME : "CustomCSharpProfile"
+
+  SONARQUBE_METRICS           : "ncloc,complexity,violations,sqale_index,code_smells,duplicated_lines_density,vulnerabilities,bugs,coverage"
+  SONARQUBE_QUALITY_GATE_NAME : "CustomQualityGate"
+
+  SONARQUBE_QUALITY_VIOLATIONS_THRESHOLD         : 60
+  SONARQUBE_QUALITY_CODE_SMELLS_THRESHOLD        : $SONARQUBE_QUALITY_VIOLATIONS_THRESHOLD
+  SONARQUBE_QUALITY_DUP_LINES_DENSITY_THRESHOLD  : 1 #Percentage, actually
+  SONARQUBE_QUALITY_BUGS_THRESHOLD               : 0
+  SONARQUBE_QUALITY_VULNERABILITIES_THRESHOLD    : 0
+
+  SONARQUBE_QUALITY_GATE_CONDITIONS: "code_smells GT $SONARQUBE_QUALITY_CODE_SMELLS_THRESHOLD,violations GT $SONARQUBE_QUALITY_VIOLATIONS_THRESHOLD,bugs GT $SONARQUBE_QUALITY_BUGS_THRESHOLD,duplicated_lines_density GT $SONARQUBE_QUALITY_DUP_LINES_DENSITY_THRESHOLD,vulnerabilities GT $SONARQUBE_QUALITY_VULNERABILITIES_THRESHOLD"
+  #other metrics
+  #"coverage LT 80,bugs GT 0,vulnerabilities GT 0,code_smells GT 10,duplicated_lines_density GT 5,reliability_rating GT 1,security_rating GT 1,new_coverage LT 80,new_reliability_rating GT 1,new_security_rating GT 1,new_maintainability_rating GT 1"
+#---SONARQUBE SECTION---
+
+stages:
+  - setup
+  - analysis
+  - compile
+  - api-test
+  #- ui-test
+
+.common_job_conditions: &common_job_conditions
   only:
     - dev
     - merge_requests
 
-# unit-test-job:   # This job runs in the test stage.
-#   stage: test    # It only starts when the job in the build stage completes successfully.
-#   script:
-#     - echo "Running unit tests... This will take about 60 seconds."
-#     - sleep 60
-#     - echo "Code coverage is 90%"
+setup-rp-job:
+  stage: setup
+  <<: *common_job_conditions
+  script:
+    - apt-get update -y
+    - apt-get install -y jq 
 
-# lint-test-job:   # This job also runs in the test stage.
-#   stage: test    # It can run at the same time as unit-test-job (in parallel).
+    - set_config_str() { jq "$1 = \"$2\"" "$REPORT_PORTAL_CONFIG_TGT_PATH" > temp.json && mv temp.json "$REPORT_PORTAL_CONFIG_TGT_PATH"; }
+    - set_config() { jq "$1 = $2" "$REPORT_PORTAL_CONFIG_TGT_PATH" > temp.json && mv temp.json "$REPORT_PORTAL_CONFIG_TGT_PATH"; }
+  
+    - echo "Editing RP UI Configs..."
+    - cp $REPORT_PORTAL_CONFIG_SRC_PATH $REPORT_PORTAL_CONFIG_TGT_PATH
+
+    - set_config_str '.server.project' "$REPORT_PORTAL_PROJECT"
+    - set_config_str '.server.apiKey' "$REPORT_PORTAL_API_KEY"
+
+    - set_config_str '.launch.name' "$REPORT_PORTAL_LAUNCH_NAME"
+    - set_config_str '.launch.description' "$REPORT_PORTAL_LAUNCH_DESCRIPTION"
+
+    - echo "Done Editing RP UI Configs."
+  artifacts:
+    paths:
+      - $REPORT_PORTAL_CONFIG_TGT_PATH
+    expire_in: 1 hour
+
+setup-rp-api-job:
+  stage: setup
+  <<: *common_job_conditions
+  script:
+    - apt-get update -y
+    - apt-get install -y jq 
+
+    - set_config_str() { jq "$1 = \"$2\"" "$REPORT_PORTAL_CONFIG_API_TGT_PATH" > temp.json && mv temp.json "$REPORT_PORTAL_CONFIG_API_TGT_PATH"; }
+    - set_config() { jq "$1 = $2" "$REPORT_PORTAL_CONFIG_API_TGT_PATH" > temp.json && mv temp.json "$REPORT_PORTAL_CONFIG_API_TGT_PATH"; }
+  
+    - echo "Editing API Configs..."
+    - cp $REPORT_PORTAL_CONFIG_SRC_PATH $REPORT_PORTAL_CONFIG_API_TGT_PATH
+
+    - set_config_str '.server.project' "$REPORT_PORTAL_PROJECT"
+    - set_config_str '.server.apiKey' "$REPORT_PORTAL_API_KEY"
+
+    - set_config_str '.launch.name' "$REPORT_PORTAL_API_LAUNCH_NAME"
+    - set_config_str '.launch.description' "$REPORT_PORTAL_API_LAUNCH_DESCRIPTION"
+
+    - echo "Done Editing API Configs."
+  artifacts:
+    paths:
+      - $REPORT_PORTAL_CONFIG_API_TGT_PATH
+    expire_in: 1 hour
+
+setup-driver-job:
+  stage: setup
+  <<: *common_job_conditions
+  script:
+    - echo "Editing Driver Configs..."
+    
+    - apt-get update -y
+    - apt-get install -y jq 
+
+    - set_config_str() { jq "$1 = \"$2\"" "$APPLICATION_TEST_CONFIG_PATH" > temp.json && mv temp.json "$APPLICATION_TEST_CONFIG_PATH"; }
+    - set_config() { jq "$1 = $2" "$APPLICATION_TEST_CONFIG_PATH" > temp.json && mv temp.json "$APPLICATION_TEST_CONFIG_PATH"; }
+
+    - set_config '.Browser.Maximize' true
+    - set_config '.Browser.Headless' true
+    - set_config '.Browser.DisableSandbox' true
+    - set_config '.Browser.DisableGPU' true
+    - set_config '.Browser.DisableSharedMemory' true
+    - set_config '.Browser.EnableWindowSize' true
+    - set_config '.Browser.WindowSizeX' 1920
+    - set_config '.Browser.WindowSizeY' 1080
+
+    - set_config '.Driver.WaitTimeout' $DRIVER_WAIT_TIMEOUT
+    - set_config '.Driver.PollingRate' $DRIVER_POLLING_RATE
+
+    - echo "Done Editing Driver Configs."
+  artifacts:
+    paths:
+      - $APPLICATION_TEST_CONFIG_PATH
+    expire_in: 1 hour
+
+download-resources-job:
+  stage: setup
+  <<: *common_job_conditions
+  script:
+    - apt-get update -y
+    - apt-get install -y curl jq
+    - sonarcube_latest_version=$(curl -s https://api.github.com/repos/SonarSource/sonarqube/releases/latest | jq -r '.tag_name')
+    - sonarqube_zip="$DL_CACHE_DIR/sonarqube-${sonarcube_latest_version}.zip"
+    - if [ ! -f "$sonarqube_zip" ]; then
+        mkdir -p $DL_CACHE_DIR
+        echo "Downloading SonarQube version ${sonarcube_latest_version}...";
+        wget "https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-${sonarcube_latest_version}.zip" -O $DL_CACHE_DIR/sonarqube-${sonarcube_latest_version}.zip;
+      else
+        echo "SonarQube version ${sonarcube_latest_version} already downloaded.";
+      fi
+  cache:
+    paths:
+      - $DL_CACHE_DIR
+
+compile-job:
+  stage: compile
+  <<: *common_job_conditions
+  script:
+    - echo "Compiling Code..."
+    - dotnet restore "${APPLICATION_SOLUTION_NAME}"
+    - dotnet build "${APPLICATION_SOLUTION_NAME}" --configuration "${APPLICATION_CONFIGURATION}"
+    - echo "Compile Complete."
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR
+    expire_in: 1 hour
+
+# ui-test-job: 
+#   stage: ui-test
+#   <<: *common_job_conditions
 #   script:
-#     - echo "Linting code... This will take about 10 seconds."
-#     - sleep 10
-#     - echo "No lint issues found."
+#     - echo "Installing Chrome Browser & Test Driver..."
+
+#     - apt-get update -y
+#     - apt-get install -y wget gnupg unzip
+
+#     - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-keyring.gpg
+#     - sh -c 'echo "deb [signed-by=/usr/share/keyrings/google-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+#     - apt-get update -y
+#     - apt-get install -y google-chrome-stable
+#     - google-chrome --version 
+#     - CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
+#     - wget -N https://storage.googleapis.com/chrome-for-testing-public/$CHROME_VERSION/linux64/chromedriver-linux64.zip
+#     - unzip chromedriver-linux64.zip -d /usr/local/bin/
+#     - apt-get install -f -y
+#     - chmod +x /usr/local/bin/chromedriver-linux64
+#     - rm chromedriver-linux64.zip
+#     - echo "Chrome driver version ${CHROME_VERSION}"
+#     - google-chrome --version 
+#     - echo "Chrome installation complete."
+
+#     - echo "Running UI Tests..."
+#     - export Spotify_Username_EnvVar="${SPOTIFY_USERNAME}"
+#     - export Spotify_Email_EnvVar="${SPOTIFY_EMAIL}"
+#     - export Spotify_Password_EnvVar="${SPOTIFY_PASSWORD}"
+#     - export Spotify_API_ClientID="${SPOTIFY_API_CLIENT_ID}"   
+#     - export Spotify_API_ClientSecret="${SPOTIFY_API_CLIENT_SECRET}"
+#     - export Spotify_API_RefreshToken="${SPOTIFY_API_REFRESH_TOKEN}"
+#     - dotnet test $APPLICATION_TEST_PATH --logger "console;verbosity=detailed" || TEST_EXIT_CODE=$?
+#     - |
+#       if [ "$TEST_EXIT_CODE" -ne 0 ]; then
+#         echo "Tests failed, but continuing..."
+#       else
+#         echo "Tests passed successfully."
+#       fi
+#       echo "Running UI Tests, Done."
+
+api-test-job:
+  stage: api-test
+  <<: *common_job_conditions
+  script:
+    - echo "Running API Tests..."
+    - export Spotify_API_ClientID="${SPOTIFY_API_CLIENT_ID}"   
+    - export Spotify_API_ClientSecret="${SPOTIFY_API_CLIENT_SECRET}"
+    - export Spotify_API_RefreshToken="${SPOTIFY_API_REFRESH_TOKEN}"
+    - dotnet test $APPLICATION_API_TEST_PATH --logger "console;verbosity=detailed"
+    - echo "Running API Tests, Done."
+    
+
+code-analysis-job:
+  stage: analysis
+  <<: *common_job_conditions
+  dependencies:
+    - download-resources-job
+  script:
+    #sonarqube tries to run as root, but due to how gitlab works it cannot, so we need to create and run it as a different user...
+    - useradd -m sonaruser || true
+
+    - apt-get update -y
+    - apt-get install -y default-jre curl unzip jq
+
+    #---install and start sonarqube server---
+    - sonarcube_latest_version=$(curl -s https://api.github.com/repos/SonarSource/sonarqube/releases/latest | jq -r '.tag_name')
+    - unzip "$DL_CACHE_DIR/sonarqube-${sonarcube_latest_version}.zip"
+    - mv "sonarqube-${sonarcube_latest_version}" sonarqube
+
+    - chown -R sonaruser:sonaruser sonarqube
+    - CURRENT_DIR=$(pwd)
+    - echo "Current Directory $CURRENT_DIR"
+    - su - sonaruser -c "cd $CURRENT_DIR/sonarqube/bin/linux-x86-64 && nohup ./sonar.sh start &"
+    - su - sonaruser -c "cd ../.."
+    #---install and start sonarqube server---
+
+    #---wait for sonarqube server to initialize by polling its api---
+    - |
+      count=0
+      until curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" "$SONARQUBE_SERVER_URL/api/system/health" | jq -r '.health' | grep -q "GREEN"; do
+        count=$((count + 1))
+        if [ "$count" -gt 60 ]; then
+          echo "SonarQube did not start within the expected time. Exiting."
+          exit 1
+        fi
+        echo "SonarQube is not ready yet. Retrying in 5 seconds..."
+        sleep 5
+      done
+    - echo "SonarQube is ready!"
+    #---wait for sonarqube server to initialize by polling its api---
+
+    #---add custom quality gate conditions to sonarqube---
+    - |
+      create_quality_gate() {
+        echo "Creating quality gate '$SONARQUBE_QUALITY_GATE_NAME'..."
+
+        response=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/qualitygates/create" -d "name=$SONARQUBE_QUALITY_GATE_NAME")
+
+        if [[ $response == *"errors"* ]]; then
+          echo "Error creating quality gate $response"
+          exit 1
+        else
+          echo "Quality gate created successfully."
+        fi
+      }
+
+      add_quality_gate_condition() {
+        local metric="$1"
+        local operator="$2"
+        local value="$3"
+
+        echo "Adding condition $metric $operator $value"
+
+        curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/qualitygates/create_condition" -d "gateName=$SONARQUBE_QUALITY_GATE_NAME" -d "metric=$metric" -d "op=$operator" -d "error=$value"
+      }
+
+      echo "Checking if quality gate '$SONARQUBE_QUALITY_GATE_NAME' exists..."
+      response=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" "$SONARQUBE_SERVER_URL/api/qualitygates/show?name=$SONARQUBE_QUALITY_GATE_NAME")
+
+      if [[ $response == *"errors"* ]]; then
+        create_quality_gate
+      else
+        echo "Quality gate '$SONARQUBE_QUALITY_GATE_NAME' already exists."
+      fi
+
+      IFS=',' read -r -a conditions <<< "$SONARQUBE_QUALITY_GATE_CONDITIONS"
+
+      for condition in "${conditions[@]}"; do
+        read -r metric operator value <<< "$condition"
+        add_quality_gate_condition "$metric" "$operator" "$value"
+      done
+    #---add custom quality gate conditions to sonarqube---
+
+    #---generate a user token to use with our tests---
+    - |
+      response_token=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/user_tokens/generate" -d "name=$SONARQUBE_TOKEN_NAME")
+      if echo "$response_token" | jq -e '.errors' > /dev/null; then
+          echo "Error generating token $(echo "$response_token" | jq -r '.errors[] | .msg')"
+          exit 1
+      fi
+
+      export SONARQUBE_TOKEN=$(echo "$response_token" | jq -r '.token')
+    #---generate a user token to use with our tests---
+
+    #--create out project---
+    - curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/projects/create" -d "project=$SONARQUBE_PROJECT_KEY&name=$SONARQUBE_PROJECT_KEY"
+    #--create out project---
+
+    #---custom sonarqube qualıty profıle to ignore warnings for static properties---
+    - |
+      #find default profile first and get the key
+      sonarway=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" "$SONARQUBE_SERVER_URL/api/qualityprofiles/search?language=cs")
+      sonarway_key=$(echo "$sonarway" | jq -r '.profiles[0].key')
+
+      #make a copy, since we cannot modify the built-in profiles
+      new_profile=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/qualityprofiles/copy" -d "fromKey=$sonarway_key&toName=$SONARQUBE_QUALITY_PROFILE_NAME")
+      new_profile_key=$(echo "$new_profile" | jq -r '.key')
+
+      curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/qualityprofiles/set_default" -d "language=cs&qualityProfile=$SONARQUBE_QUALITY_PROFILE_NAME"
+
+      #S2325: Make XYZ a static property
+      curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/qualityprofiles/deactivate_rule" -d "rule=csharpsquid:S2325&key=$new_profile_key"
+    #---custom sonarqube qualıty profıle to ignore warnings for static properties---
+
+    #---set our custom quality gate---
+    - curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/qualitygates/select" -d "gateName=$SONARQUBE_QUALITY_GATE_NAME" -d "projectKey=$SONARQUBE_PROJECT_KEY"
+    #---set our custom quality gate---
+
+    #---install and run sonarqube scanner for .net---
+    - dotnet tool install --global dotnet-sonarscanner
+    - export PATH="$PATH:$HOME/.dotnet/tools"
+    
+    - dotnet sonarscanner begin /k:"$SONARQUBE_PROJECT_KEY" /d:sonar.host.url="$SONARQUBE_SERVER_URL" /d:sonar.login="$SONARQUBE_TOKEN"
+    #must be built in between the begin and end steps.
+    - dotnet build "${APPLICATION_SOLUTION_NAME}" --configuration "${APPLICATION_CONFIGURATION}"
+    - dotnet sonarscanner end /d:sonar.login="$SONARQUBE_TOKEN"
+    #---install and run sonarqube scanner for .net---
+
+    #---wait for the code analysis to complete---
+    - |
+      task_id=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" "$SONARQUBE_SERVER_URL/api/ce/component?component=$SONARQUBE_PROJECT_KEY" | jq -r '.queue[0].id')
+
+      echo "Analysis Task ID $task_id"
+
+      status="IN_PROGRESS"
+      while [[ "$status" == "IN_PROGRESS" || "$status" == "PENDING" ]]; do
+          response=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" "$SONARQUBE_SERVER_URL/api/ce/task?id=$task_id")
+
+          status=$(echo "$response" | jq -r '.task.status')
+          echo "Current Status $status"
+
+          if [[ "$status" == "SUCCESS" ]]; then
+              echo "SonarQube analysis completed successfully."
+              break
+          elif [[ "$status" == "FAILED" ]]; then
+              echo "SonarQube analysis failed."
+              exit 1
+          fi
+
+          sleep 5
+      done
+    #---wait for the code analysis to complete---
+
+    #---check the results and print them---
+    - |
+      analysis_results=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" "$SONARQUBE_SERVER_URL/api/measures/component?component=$SONARQUBE_PROJECT_KEY&metricKeys=$SONARQUBE_METRICS")
+      response=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" "$SONARQUBE_SERVER_URL/api/qualitygates/project_status?projectKey=$SONARQUBE_PROJECT_KEY")
+
+      echo "----------------------------------------------"
+      echo "Analysis Results"
+      echo "----------------------------------------------"
+      echo "$analysis_results" | jq -r '.component.measures[] | "\(.metric) \(.value) \(.bestValue)"' | while read metric value bestValue; do
+        printf "Metric: %s\nValue: %s\nBest Value: %s\n--\n" "$metric" "$value" "$bestValue"
+      done
+
+      echo "----------------------------------------------"
+      echo "Quality Gates"
+      echo "----------------------------------------------"
+      echo "$response" | jq -r '.projectStatus.conditions[] | "\(.metricKey) \(.status) \(.comparator) \(.errorThreshold) \(.actualValue)"' | while read metricKey status comparator errorThreshold actualValue; do
+        printf "Metric: %s\nStatus: %s\nComparator: %s\nError Threshold: %s\nActual Value: %s\n--\n" "$metricKey" "$status" "$comparator" "$errorThreshold" "$actualValue"
+      done
+
+      status=$(echo "$response" | jq -r '.projectStatus.status')
+
+      echo "----------------------------------------------"
+      echo "Quality Gate Status: $status"
+      echo "----------------------------------------------"
+
+      su - sonaruser -c "cd $CURRENT_DIR/sonarqube/bin/linux-x86-64 && ./sonar.sh stop"
+
+      if [[ "$status" == "OK" ]]; then
+          echo "The project has passed the quality gate."
+      elif [[ "$status" == "WARN" ]]; then
+          echo "The project has warnings in the quality gate."
+      elif [[ "$status" == "ERROR" ]]; then
+          echo "The project has failed the quality gate."
+          exit 1
+      else
+          echo "Unknown status $status"
+          exit 1
+      fi
+    #---check the results and print them---
+
+  cache:
+    paths:
+      - $DL_CACHE_DIR
+    
+
+
+
+######################
+# Example of how to wait for jobs to complete using gitlab's api... Useful for running jobs concurrently
+    # - |
+      # PROJECT_ID="236525"    
+      # PIPELINE_ID="$CI_PIPELINE_ID"     
+      # TARGET_STAGE="setup"              
+      # GITLAB_TOKEN="$Gitlab_CI_API_Token_Secret"
+      # BASE_URL="$CI_API_V4_URL/projects/$PROJECT_ID/pipelines/$PIPELINE_ID/jobs"
+      # JOBS_TO_WAIT_FOR=("setup-rp-job" "setup-rp-api-job" "setup-driver-job" "download-resources-job") 
+
+      # pipe_count=0
+
+      # while true; do
+      #   all_jobs_complete=true
+
+      #   pipe_count=$((pipe_count + 1))
+
+      #   for job_name in "${JOBS_TO_WAIT_FOR[@]}"; do
+      #     job_status=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$BASE_URL" | \
+      #                  jq -r --arg name "$job_name" '.[] | select(.name == $name) | .status')
+
+      #     echo "Current status of $job_name: $job_status"
+
+      #     if [[ "$job_status" != "success" && "$job_status" != "failed" ]]; then
+      #       all_jobs_complete=false
+      #     elif [[ "$job_status" == "failed" ]]; then
+      #       echo "$job_name failed."
+      #       exit 1
+      #     fi
+      #   done
+
+      #   if $all_jobs_complete; then
+      #     echo "All jobs completed successfully."
+      #     break
+      #   elif [ "$count" -gt 60 ]; then
+      #     echo "Jobs took too long to complete."
+      #     exit 1
+      #   fi
+
+      #   sleep 5
+      # done
+######################
+
+######################
+# Reusable script using YAML anchors, example
+#
+#.common_script: &common_script
+#    - apt-get update -y
+#    - apt-get install -y curl wget gnupg unzip jq 
+#
+# Usage
+#
+#test:
+#  stage: test
+#  script:
+#    - *common_script
+#    - echo "Blah blah"
+######################
+#---install and run sonarqube scanner for cli---
+# - |
+#   LATEST_SONARCLI_TAG=$(curl -s https://api.github.com/repos/SonarSource/sonar-scanner-cli/releases/latest | jq -r .tag_name)
+#   curl -L -o sonar-scanner.zip "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${LATEST_SONARCLI_TAG}-linux-x64.zip"
+#   unzip sonar-scanner.zip -d /sonar-scanner
+#   export PATH="/sonar-scanner/sonar-scanner-${LATEST_SONARCLI_TAG}-linux-x64/bin:$PATH"
+
+#   sonar-scanner -Dsonar.projectKey=$SONARQUBE_PROJECT_KEY -Dsonar.host.url=$SONARQUBE_SERVER_URL -Dsonar.login=$SONARQUBE_TOKEN -Dsonar.sources="$CI_PROJECT_DIR/" 
+#   sonar-scanner end /d:sonar.login="$SONARQUBE_TOKEN"
+#---install and run sonarqube scanner for cli---

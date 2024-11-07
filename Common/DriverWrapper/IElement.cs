@@ -8,12 +8,14 @@ public interface IElement
     public bool Enabled { get; }
     public bool Selected { get; }
     public bool Displayed { get; }
+    public System.Drawing.Point Position { get; }
     public void Clear();
     public void ClearViaKeys();
     public void SendText(string text);
     public void SendEnterKey();
     public void Submit();
     public void Click();
+    public System.Drawing.Size Size { get; }
     public IElement FindElementByCss(string css);
     public IElement FindElementByXPath(string xpath);
     public IElement FindElement(ILocator locator);

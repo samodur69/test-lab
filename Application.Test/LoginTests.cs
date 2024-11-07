@@ -7,50 +7,45 @@ using Business.Pages;
 public class LoginTests : TestFixtureBase
 {
     [Test, TestCaseSource(nameof(ValidEmailPassword))]
-    [Description("Login with Valid Email and Password")]
+    [Description("Login with Valid Email and Valid Password")]
     [Category("Smoke")]
     [Property("Priority", "P1")]
-    public void LoginWithValidEmailAndPassword(string email, string password)
+    public void LoginPage_Should_SuccessfullyLogin_When_ValidEmailAndPassword_AreProvided(string email, string password)
     {
         var pages = LoginBaseStep(email, password);
-        pages.Home.IsLoginButtonInvalid().Should().BeTrue();
-        pages.Home.IsUserProfileButtonVisible().Should().BeTrue();
+        pages.Home.IsLoginButtonInvisible().Should().BeTrue("This element does not exist once we leave the Login page. It is an indicator that the login flow was successful");
+        pages.Home.IsUserProfileButtonVisible().Should().BeTrue("This element is visible when the login flow was successful");
     }
 
     [Test, TestCaseSource(nameof(ValidUsernamePassword))]
-    [Description("Login with Valid Username and Password")]
+    [Description("Login with Valid Username and Valid Password")]
     [Category("Smoke")]
     [Property("Priority", "P1")]
-    public void LoginWithValidUsernameAndPassword(string username, string password)
-    {
-        var pages = LoginBaseStep(username, password);
-        pages.Home.IsLoginButtonInvalid().Should().BeTrue();
-        pages.Home.IsUserProfileButtonVisible().Should().BeTrue();
-    }
+    public void LoginPage_Should_SuccessfullyLogin_When_ValidUserNameAndPassword_AreProvided(string username, string password) => 
+        LoginPage_Should_SuccessfullyLogin_When_ValidEmailAndPassword_AreProvided(username, password);
 
     [Test, TestCaseSource(nameof(ValidUsernameAndEmailWrongPassword))]
-    [Description("Login with Valid Email or Username but Wrong Password")]
+    [Description("Login with Valid Email or Valid Username but Wrong Password")]
     [Category("Extended")]
     [Property("Priority", "P2")]
-    public void LoginWithValidUsernameAndWrongPassword(string username, string password)
+    public void LoginPage_Should_Fail_When_ValidUsername_And_InvalidPassword_AreProvided(string username, string password)
     {
         var pages = LoginBaseStep(username, password);
-        pages.Home.IsLoginButtonInvalid().Should().BeFalse();
         pages.Login.IsErrorBannerVisible().Should().BeTrue();
     }
 
     [Test, TestCaseSource(nameof(WrongUsernameAndEmailWrongPassword))]
-    [Description("Login with Wrong Email or Username and Wrong Password")]
+    [Description("Login with Wrong Email or Wrong Username and Wrong Password")]
     [Category("Extended")]
     [Property("Priority", "P2")]
-    public void LoginWithWrongUsernameOrEmailAndWrongPassword(string username, string password) => 
-        LoginWithValidUsernameAndWrongPassword(username, password);
+    public void LoginPage_Should_Fail_When_InvalidUsername_And_InvalidPassword_AreProvided(string username, string password) => 
+        LoginPage_Should_Fail_When_ValidUsername_And_InvalidPassword_AreProvided(username, password);
 
     [Test, TestCaseSource(nameof(ValidEmailUsername))]
     [Description("Error Message under Empty Email Field")]
     [Category("Extended")]
     [Property("Priority", "P3")]
-    public void ErrorMessageUnderEmptyEmailUsernameField(string username)
+    public void LoginPage_Should_DisplayErrorMessage_When_EmailOrUsername_AreEmpty(string username)
     {
         var pages = HomeBaseStep();
 
@@ -63,7 +58,7 @@ public class LoginTests : TestFixtureBase
     [Description("Error Message under Empty Password Field")]
     [Category("Extended")]
     [Property("Priority", "P3")]
-    public void ErrorMessageUnderEmptyPasswordField(string password)
+    public void LoginPage_Should_DisplayErrorMessage_When_Password_IsEmpty(string password)
     {
         var pages = HomeBaseStep();
 
