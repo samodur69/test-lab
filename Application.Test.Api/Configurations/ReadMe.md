@@ -21,6 +21,7 @@ playlist-modify-public
 playlist-modify-private
 playlist-read-private
 playlist-read-collaborative
+ugc-image-upload
 
 ## Usage
 
