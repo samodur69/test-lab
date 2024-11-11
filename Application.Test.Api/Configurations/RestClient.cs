@@ -1,13 +1,12 @@
 ﻿namespace Application.Api.Configuration;
 
+using Application.Api.Configurations;
 using Common.Configuration;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Xml.Linq;
 
 public static class RestClientUtil
 {
@@ -17,10 +16,6 @@ public static class RestClientUtil
     static readonly AppConfig AppConfig = ConfigurationManager.AppConfig;
 
     private static string baseUrl = AppConfig.Url.API_Base;
-    private static string TokenUrl = AppConfig.Url.API_Token;
-    private static string clientID = AppConfig.EnvironmentVariables.API_ClientID;
-    private static string clientSecret = AppConfig.EnvironmentVariables.API_ClientSecret;
-    private static string _refreshToken = AppConfig.EnvironmentVariables.API_RefreshToken;
     private static string _accessToken;
     private static string user_id;
     public static string BaseUrl => baseUrl;
@@ -32,39 +27,67 @@ public static class RestClientUtil
         client = new RestClient(BaseUrl + "/v1");
         GetUser();
     }
-    public static RestResponse ExecuteRequest(string addURL, Method method, Dictionary<string, string>? headers = null, params string[] body)
+
+    private static RestResponse ExecuteRequest(string addURL, Method method, Dictionary<string, string>? headers = null, Dictionary<string, List<string>>? queryParams = null, object? body = null)
     {
         var request = new RestRequest(addURL, method);
         request.AddHeader("Authorization", "Bearer " + _accessToken);
         if (headers != null)
         {
-            foreach (var header in headers)
+            request.AddHeaders(headers);
+        }
+        if (body != null)
+        {
+            request.AddJsonBody(body);
+        }
+        if (queryParams != null)
+        {
+            foreach (var param in queryParams)
             {
-                request.AddHeader(header.Key, header.Value);
+                foreach (var value in param.Value)
+                {
+                    request.AddQueryParameter(param.Key, value);
+                }
             }
         }
-
         return client.Execute(request); 
+    }
+
+    public static RestResponse PostRequest(string addURL, Dictionary<string, List<string>>? queryParams = null, object? body = null)
+    {
+        var headers = new Dictionary<string, string>() { {"Content-Type", "application/json"} };
+
+        return ExecuteRequest(addURL, Method.Post, headers, queryParams, body);
+    }
+
+    public static RestResponse DeleteRequest(string addURL)
+    {
+        return ExecuteRequest(addURL, Method.Delete);
+    }
+
+    public static RestResponse GetRequest(string addURL)
+    {
+        return ExecuteRequest(addURL, Method.Get);
     }
 
     private static void RefreshToken()
     {
-        var _client = new RestClient(TokenUrl);
+        var _client = new RestClient(AppConfig.Url.API_Token);
         var request = new RestRequest("/token",Method.Post);
 
-        var credentials = $"{clientID}:{clientSecret}";
+        var credentials = $"{AppConfig.EnvironmentVariables.API_ClientID}:{AppConfig.EnvironmentVariables.API_ClientSecret}";
         var base64Credentials = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(credentials));
 
         request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
         request.AddHeader("Authorization", "Basic " + base64Credentials);
         request.AddParameter("grant_type", "refresh_token");
-        request.AddParameter("refresh_token", _refreshToken);
+        request.AddParameter("refresh_token", AppConfig.EnvironmentVariables.API_RefreshToken);
 
         var response = _client.Execute(request);
         if (response.StatusCode == HttpStatusCode.OK)
         {
             var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(response.Content);
-            _accessToken = tokenResponse.access_token;
+            _accessToken = tokenResponse.Access_token;
         }
         else
         {
@@ -74,9 +97,9 @@ public static class RestClientUtil
     
     public static string GetUser()
     {
-        var response = ExecuteRequest("/me", Method.Get);
+        var response = GetRequest("/me");
         var user = JsonConvert.DeserializeObject<UserProfile>(response.Content);
-        user_id = user.id;
+        user_id = user.Id;
         return user_id;
     }
 }
