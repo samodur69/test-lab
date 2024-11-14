@@ -54,11 +54,13 @@ public interface IDriver
     public void Refresh();
     public void GoBack();
     public void Close();
-    public void Click();
+    public void Click(System.Drawing.Point pos);
+    public void Click(int x, int y);
     public void ClickElement(IElement element);
     public void RightClickElement(IElement element);
     public void DoubleClickElement(IElement element);
-    public void DoubleClick();
+    public void DoubleClick(System.Drawing.Point pos);
+    public void DoubleClick(int x, int y);
     public void MoveCursorToElement(IElement element);
     public void DragAndDropToOffset(IElement element, int x, int y);
     public void MoveCursorTo(System.Drawing.Point pos);

@@ -57,7 +57,6 @@ public class Home : BusinessBase
     public string FilteredSongName => HomePage.SongFilterResultText;
     public string GridFilteredNames => HomePage.GridFilterResultText;
     public bool IsUserProfileButtonVisible() => HomePage.UserProfileButton.IsVisible;
-    public bool IsLoginButtonInvisible() => LoginButton.WaitInvalid();
     public void CloseCookies() => Waiter.WaitUntil(() => !ExceptionWrapper.Test(()=>HomePage.CloseCookiesButton.Click()).IsError());
     public LibraryHolder Library => new(HomePage.LibraryHolderControl);
     public PlayerHolder Player => new(HomePage.PlayerControl);

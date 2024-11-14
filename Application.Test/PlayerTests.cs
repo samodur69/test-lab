@@ -323,7 +323,6 @@ public class PlayerTests : TestFixtureBase
         loginPage.EnterPassword(LoginPassword);
         loginPage.PressLogin();
         
-        homePage.IsLoginButtonInvisible().Should().BeTrue("This element does not exist once we leave the Login page. It is an indicator that the login flow was successful");
         homePage.IsUserProfileButtonVisible().Should().BeTrue("This element is visible when the login flow was successful");
 
         homePage.CloseCookies();

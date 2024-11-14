@@ -10,6 +10,7 @@ public class BusinessBase(ModelBase rootModel)
         get => BaseModel.Url;
         set => BaseModel.Url = value;
     }
+    public bool UrlChanged() => ModelBase.GetCurrentUrl() != Url;
     public static List<System.Net.Cookie> GetCookies => [.. ModelBase.Cookies];
     public void Open() => BaseModel.OpenUrl();
     public static void Refresh() => ModelBase.Refresh();

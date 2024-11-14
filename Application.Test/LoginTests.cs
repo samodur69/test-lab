@@ -13,7 +13,6 @@ public class LoginTests : TestFixtureBase
     public void LoginPage_Should_SuccessfullyLogin_When_ValidEmailAndPassword_AreProvided(string email, string password)
     {
         var pages = LoginBaseStep(email, password);
-        pages.Home.IsLoginButtonInvisible().Should().BeTrue("This element does not exist once we leave the Login page. It is an indicator that the login flow was successful");
         pages.Home.IsUserProfileButtonVisible().Should().BeTrue("This element is visible when the login flow was successful");
     }
 

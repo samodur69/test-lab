@@ -3,6 +3,7 @@ namespace Common.DriverWrapper;
 using Common.Enums;
 using Common.DriverWrapper.Configuration;
 using Common.DriverWrapper.Impl.Selenium;
+using Common.DriverWrapper.Impl.Playwright;
 
 public static class LocatorFactory
 {
@@ -11,7 +12,7 @@ public static class LocatorFactory
         return driverConfig.DriverType switch
         {
             DriverTypes.SELENIUM => new SeleniumLocator(),
-            DriverTypes.PLAYWRIGHT => throw new NotImplementedException("PlayWright hasn't been implemented yet!"),
+            DriverTypes.PLAYWRIGHT => new PlaywrightLocator(),
             _ => throw new ArgumentException("No/wrong driver was selected!")
         };
     }

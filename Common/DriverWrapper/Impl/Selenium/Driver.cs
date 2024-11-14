@@ -155,11 +155,13 @@ public class SeleniumDriver(AppDriverSettings.WebDriverConfig settings) : IDrive
 
     public void MoveCursorToElement(IElement element) => new Actions(driver).MoveToElement((element as SeleniumElement)!.Element).Perform();
     public void DragAndDropToOffset(IElement element, int x, int y) => new Actions(driver).DragAndDropToOffset((element as SeleniumElement)!.Element, x, y).Perform();
-    public void Click() => new Actions(driver).Click().Perform();
+    public void Click(int x, int y) { MoveCursorTo(x, y); new Actions(driver).Click().Perform(); }
+    public void Click(System.Drawing.Point pos) { MoveCursorTo(pos); new Actions(driver).Click().Perform(); }
     public void ClickElement(IElement element) => new Actions(driver).Click((element as SeleniumElement)!.Element).Perform();
     public void RightClickElement(IElement element) => new Actions(driver).ContextClick((element as SeleniumElement)!.Element).Perform();
     public void DoubleClickElement(IElement element) => new Actions(driver).DoubleClick((element as SeleniumElement)!.Element).Perform();
-    public void DoubleClick() => new Actions(driver).DoubleClick().Perform();
+    public void DoubleClick(int x, int y) { MoveCursorTo(x, y); new Actions(driver).DoubleClick().Perform(); }
+    public void DoubleClick(System.Drawing.Point pos) { MoveCursorTo(pos); new Actions(driver).DoubleClick().Perform(); }
     public void MoveCursorTo(System.Drawing.Point pos) => new Actions(driver).MoveToLocation(pos.X, pos.Y).Perform();
     public void MoveCursorTo(int x, int y) => new Actions(driver).MoveToLocation(x, y).Perform();
     public System.Drawing.Point GetElementPos(IElement element) => (element as SeleniumElement)!.Element.Location;
