@@ -38,6 +38,7 @@ public class ModelBase
     }
 
     public string Url { get; set; } = "";
+    public static string GetCurrentUrl() => Driver.GetURL();
 
     public void OpenUrl() => Driver.GoToURL(Url);
 

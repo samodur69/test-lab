@@ -5,22 +5,18 @@ namespace Common.Configuration;
 
 public static class ConfigurationManager
 {
-    public static readonly AppConfig AppConfig;
-    private static readonly string configFolder = "Configurations";
-    private static readonly string configName = "test.uat.json";
+    private static readonly string ConfigFolder = "Configurations";
+    private static readonly string ConfigName = "test.uat.json";
+    
+    public static readonly AppConfig AppConfig = ParseConfig(new ConfigurationBuilder()
+        .SetBasePath(AppContext.BaseDirectory)
+        .AddJsonFile(Path.Combine(ConfigFolder, ConfigName), optional: false, reloadOnChange: true)
+        .AddEnvironmentVariables()
+        .Build());
 
-    static ConfigurationManager()
+    private static AppConfig ParseConfig(IConfigurationRoot config)
     {
-            AppConfig = ParseConfig(new ConfigurationBuilder()
-                        .SetBasePath(AppContext.BaseDirectory)
-                        .AddJsonFile(Path.Combine(configFolder, configName), optional: false, reloadOnChange: true)
-                        .AddEnvironmentVariables()
-                        .Build());
-    }
-
-    private static AppConfig ParseConfig(IConfigurationRoot Config)
-    {
-        string GetValue(string arg) => Config[arg] ?? "";
+        string GetValue(string arg) => config[arg] ?? "";
 
         var driverType = GetValue("Driver:Type");
         var driverTimeout = int.Parse(GetValue("Driver:WaitTimeout"));
@@ -51,7 +47,7 @@ public static class ConfigurationManager
         var maximize = bool.Parse(GetValue("Browser:Maximize"));
         var headless = bool.Parse(GetValue("Browser:Headless"));
         var disableSandbox = bool.Parse(GetValue("Browser:DisableSandbox"));
-        var disableGPU = bool.Parse(GetValue("Browser:DisableGPU"));
+        var disableGpu = bool.Parse(GetValue("Browser:DisableGPU"));
         var disableSharedMemory = bool.Parse(GetValue("Browser:DisableSharedMemory"));
         var enableWindowSize = bool.Parse(GetValue("Browser:EnableWindowSize"));
         var windowSizeX = int.Parse(GetValue("Browser:WindowSizeX"));
@@ -82,7 +78,7 @@ public static class ConfigurationManager
                 Maximize : maximize,
                 Headless : headless,
                 DisableSandbox : disableSandbox,
-                DisableGPU : disableGPU,
+                DisableGPU : disableGpu,
                 DisableSharedMemory : disableSharedMemory,
                 EnableWindowSize : enableWindowSize,
                 WindowSizeX : windowSizeX,

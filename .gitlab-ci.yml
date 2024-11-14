@@ -28,7 +28,8 @@ variables:
 #---REPORT PORTAL SECTION---
 
 #---DRIVER SECTION---
-  DRIVER_WAIT_TIMEOUT : 10000
+  DRIVER_TYPE         : "Selenium"
+  DRIVER_WAIT_TIMEOUT : 20000
   DRIVER_POLLING_RATE : 100
 #---DRIVER SECTION---
 
@@ -74,7 +75,7 @@ stages:
   - analysis
   - compile
   - api-test
-  #- ui-test
+#  - ui-test
 
 .common_job_conditions: &common_job_conditions
   only:
@@ -152,6 +153,7 @@ setup-driver-job:
     - set_config '.Browser.WindowSizeX' 1920
     - set_config '.Browser.WindowSizeY' 1080
 
+    - set_config_str '.Driver.Type' $DRIVER_TYPE
     - set_config '.Driver.WaitTimeout' $DRIVER_WAIT_TIMEOUT
     - set_config '.Driver.PollingRate' $DRIVER_POLLING_RATE
 
