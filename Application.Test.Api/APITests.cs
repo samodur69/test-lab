@@ -5,6 +5,7 @@ using Application.Api.Configurations;
 using Newtonsoft.Json;
 using Common.Utils.Waiter;
 using System.Xml.Linq;
+using System.Reflection;
 namespace Application.Api;
 
 [TestFixture]
@@ -95,7 +96,7 @@ public class APITests : TestFixtureBase
                 .StatusCode(HttpStatusCode.OK)
                 .DeserializeTo(typeof(SpotifyPlaylist));
             return response.Name == nameNew;
-        },300000, 5000);
+        },30000, 5000);
 
         response.Name.Should().Be(nameNew);
         response.Description.Should().Be(descriptionNew);

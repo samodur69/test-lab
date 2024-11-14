@@ -28,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Application.Business\Application.Business.csproj" />
+    <ProjectReference Include="..\ReportPortal.Custom\ReportPortal.Custom.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,9 +42,5 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-<!--  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">-->
-<!--    <Exec Command="powershell -ExecutionPolicy ByPass -File .\Configurations\UpdateConfig.ps1" />-->
-<!--  </Target>-->
 
 </Project>
