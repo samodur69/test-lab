@@ -5,7 +5,7 @@ using NLog;
 
 public static class LoggerFactory
 {
-    public static ILogger Create(LoggerConfig logConfig)
+    public static ILogger Create(LoggerConfig logConfig, object? extraArg = null)
     {
         ApplyConfig(logConfig);
 
@@ -13,6 +13,7 @@ public static class LoggerFactory
         {
             LoggerType.FILE => new FileLogger(),
             LoggerType.CONSOLE => new ConsoleLogger(),
+            LoggerType.REPORT_PORTAL => new ReportPortalCustomLogger((ReportPortal.Shared.Execution.ITestContext)extraArg!),
             _ => new DummyLogger()
         };
     }

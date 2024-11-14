@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\ReportPortal.Custom\ReportPortal.Custom.csproj" />
   </ItemGroup>
 
   <ItemGroup>

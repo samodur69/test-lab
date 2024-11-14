@@ -41,7 +41,7 @@
         "ScreenshotPath": "Screenshots"
     },
     "Logging": {
-        "Type": "Console",
+        "Type": "Report_Portal",
         "FileName": "Logs/logs.txt"
     }
 }
