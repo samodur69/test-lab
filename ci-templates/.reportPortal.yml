@@ -1,0 +1,49 @@
+setup-rp-job:
+  stage: setup
+  extends: .common_job_template
+  script:
+    - apt-get update -y
+    - apt-get install -y jq 
+
+    - set_config_str() { jq "$1 = \"$2\"" "$REPORT_PORTAL_CONFIG_TGT_PATH" > temp.json && mv temp.json "$REPORT_PORTAL_CONFIG_TGT_PATH"; }
+    - set_config() { jq "$1 = $2" "$REPORT_PORTAL_CONFIG_TGT_PATH" > temp.json && mv temp.json "$REPORT_PORTAL_CONFIG_TGT_PATH"; }
+  
+    - echo "Editing RP UI Configs..."
+    - cp $REPORT_PORTAL_CONFIG_SRC_PATH $REPORT_PORTAL_CONFIG_TGT_PATH
+
+    - set_config_str '.server.project' "$REPORT_PORTAL_PROJECT"
+    - set_config_str '.server.apiKey' "$REPORT_PORTAL_API_KEY"
+
+    - set_config_str '.launch.name' "$REPORT_PORTAL_LAUNCH_NAME"
+    - set_config_str '.launch.description' "$REPORT_PORTAL_LAUNCH_DESCRIPTION"
+
+    - echo "Done Editing RP UI Configs."
+  artifacts:
+    paths:
+      - $REPORT_PORTAL_CONFIG_TGT_PATH
+    expire_in: 1 hour
+
+setup-rp-api-job:
+  stage: setup
+  extends: .common_job_template
+  script:
+    - apt-get update -y
+    - apt-get install -y jq 
+
+    - set_config_str() { jq "$1 = \"$2\"" "$REPORT_PORTAL_CONFIG_API_TGT_PATH" > temp.json && mv temp.json "$REPORT_PORTAL_CONFIG_API_TGT_PATH"; }
+    - set_config() { jq "$1 = $2" "$REPORT_PORTAL_CONFIG_API_TGT_PATH" > temp.json && mv temp.json "$REPORT_PORTAL_CONFIG_API_TGT_PATH"; }
+  
+    - echo "Editing API Configs..."
+    - cp $REPORT_PORTAL_CONFIG_SRC_PATH $REPORT_PORTAL_CONFIG_API_TGT_PATH
+
+    - set_config_str '.server.project' "$REPORT_PORTAL_PROJECT"
+    - set_config_str '.server.apiKey' "$REPORT_PORTAL_API_KEY"
+
+    - set_config_str '.launch.name' "$REPORT_PORTAL_API_LAUNCH_NAME"
+    - set_config_str '.launch.description' "$REPORT_PORTAL_API_LAUNCH_DESCRIPTION"
+
+    - echo "Done Editing API Configs."
+  artifacts:
+    paths:
+      - $REPORT_PORTAL_CONFIG_API_TGT_PATH
+    expire_in: 1 hour

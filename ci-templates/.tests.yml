@@ -1,0 +1,10 @@
+api-test-job:
+  stage: api-test
+  extends: .common_job_template
+  script:
+    - echo "Running API Tests..."
+    - export Spotify_API_ClientID="${SPOTIFY_API_CLIENT_ID}"   
+    - export Spotify_API_ClientSecret="${SPOTIFY_API_CLIENT_SECRET}"
+    - export Spotify_API_RefreshToken="${SPOTIFY_API_REFRESH_TOKEN}"
+    - dotnet test $APPLICATION_API_TEST_PATH --logger "console;verbosity=detailed"
+    - echo "Running API Tests, Done."

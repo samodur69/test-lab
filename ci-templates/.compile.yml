@@ -1,0 +1,12 @@
+compile-job:
+  stage: compile
+  extends: .common_job_template
+  script:
+    - echo "Compiling Code..."
+    - dotnet restore "${APPLICATION_SOLUTION_NAME}"
+    - dotnet build "${APPLICATION_SOLUTION_NAME}" --configuration "${APPLICATION_CONFIGURATION}"
+    - echo "Compile Complete."
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR
+    expire_in: 1 hour
