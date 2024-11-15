@@ -1,0 +1,30 @@
+setup-driver-job:
+  stage: setup
+  extends: .common_job_template
+  script:
+    - echo "Editing Driver Configs..."
+    
+    - apt-get update -y
+    - apt-get install -y jq 
+
+    - set_config_str() { jq "$1 = \"$2\"" "$APPLICATION_TEST_CONFIG_PATH" > temp.json && mv temp.json "$APPLICATION_TEST_CONFIG_PATH"; }
+    - set_config() { jq "$1 = $2" "$APPLICATION_TEST_CONFIG_PATH" > temp.json && mv temp.json "$APPLICATION_TEST_CONFIG_PATH"; }
+
+    - set_config '.Browser.Maximize' true
+    - set_config '.Browser.Headless' true
+    - set_config '.Browser.DisableSandbox' true
+    - set_config '.Browser.DisableGPU' true
+    - set_config '.Browser.DisableSharedMemory' true
+    - set_config '.Browser.EnableWindowSize' true
+    - set_config '.Browser.WindowSizeX' 1920
+    - set_config '.Browser.WindowSizeY' 1080
+
+    - set_config_str '.Driver.Type' $DRIVER_TYPE
+    - set_config '.Driver.WaitTimeout' $DRIVER_WAIT_TIMEOUT
+    - set_config '.Driver.PollingRate' $DRIVER_POLLING_RATE
+
+    - echo "Done Editing Driver Configs."
+  artifacts:
+    paths:
+      - $APPLICATION_TEST_CONFIG_PATH
+    expire_in: 1 hour

@@ -1,4 +1,4 @@
-﻿using Application.Api.Configuration;
+using Application.Api.Configuration;
 using static RestAssured.Dsl;
 using System.Net;
 using Application.Api.Configurations;
@@ -97,6 +97,14 @@ public class APITests : TestFixtureBase
                 .DeserializeTo(typeof(SpotifyPlaylist));
             return response.Name == nameNew;
         },30000, 5000);
+
+        response = (SpotifyPlaylist)Given()
+                .Spec(requestSpecification)
+                .When()
+                .Get($"/playlists/{_basePlaylistID}")
+                .Then()
+                .StatusCode(HttpStatusCode.OK)
+                .DeserializeTo(typeof(SpotifyPlaylist));
 
         response.Name.Should().Be(nameNew);
         response.Description.Should().Be(descriptionNew);

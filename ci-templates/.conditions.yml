@@ -1,0 +1,4 @@
+.common_job_template:
+  only:
+    - dev
+    - merge_requests
