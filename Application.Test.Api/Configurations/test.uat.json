@@ -1,0 +1,47 @@
+{
+    "Url": {
+        "Base": "https://www.spotify.com",
+        "Login": "/login",
+        "Signup": "/signup",
+        "API_Base": "https://api.spotify.com",
+        "API_Token": "https://accounts.spotify.com/api"
+    },
+    "Browser": {
+        "Type": "Chrome",
+        "Maximize": true,
+        "Headless": false,
+        "DisableSandbox": false,
+        "DisableGPU": false,
+        "DisableSharedMemory": false,
+        "EnableWindowSize": false,
+        "WindowSizeX": 1920,
+        "WindowSizeY": 1080,
+        "DebuggerAddress": "",
+        "DebuggerPort": -1,
+        "RemoteDebuggingPort": -1
+    },
+    "EnvironmentVars": {
+        "Enable": true,
+        "Username": "Spotify_Username_EnvVar",
+        "Email": "Spotify_Email_EnvVar",
+        "Password": "Spotify_Password_EnvVar",
+        "API_ClientID": "Spotify_API_ClientID",
+        "API_ClientSecret": "Spotify_API_ClientSecret",
+        "API_RefreshToken": "Spotify_API_RefreshToken"
+    },
+  "Credentials": {
+        "Username": "Username",
+        "Email": "Email",
+        "Password": "Password"
+  },
+    "Driver": { 
+        "Type": "Selenium",
+        "WaitTimeout": 10000,
+        "PollingRate": 100,
+        "ScreenshotPath": "Screenshots"
+    },
+    "Logging": {
+        "Type": "Report_Portal",
+        "FileName": "Logs/logs.txt"
+    }
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/reportportal/agent-net-nunit/master/src/ReportPortal.NUnitExtension/ReportPortal.config.schema",
+  "enabled": true,
+  "server": {
+    "url": "https://reportportal.epam.com",
+    "project": "alexey_nadenenko1_personal",
+    "apiKey": "<API_KEY>"
+  },
+
+  "launch": {
+    "name": ".NET Launch",
+    "description": "My awesome launch",
+    "debugMode": false,
+    "attributes": [ "tag1", "tag2", "platform:x64" ]
+  },
+
+  "rootNamespaces": [ "Application.Test.Api.dll", "Application.Test.Bdd.dll", "Application.Test.dll", "Application.Api", "Application.Bdd", "Application.Test", "Application", "Api", "Bdd", "Test"]
+}

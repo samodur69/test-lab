@@ -8,9 +8,36 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="FluentAssertions" Version="6.12.1" />
     <PackageReference Include="NUnit" Version="4.2.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+    <PackageReference Include="NUnit.ConsoleRunner" Version="3.18.3" />
+    <PackageReference Include="RestAssured.Net" Version="4.4.0" />
+    <PackageReference Include="RestSharp" Version="112.1.0" />
+    <PackageReference Include="ReportPortal.Client" Version="3.9.0" />
+    <PackageReference Include="ReportPortal.NUnit" Version="4.6.2" />
+    <PackageReference Include="ReportPortal.Shared" Version="3.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\ReportPortal.Custom\ReportPortal.Custom.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Configurations\test.uat.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configurations\api.uat.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ReportPortal.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Configurations\Images\imagecover.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,214 @@
+download-resources-job:
+  stage: setup
+  extends: .common_job_template
+  script:
+    - apt-get update -y
+    - apt-get install -y curl jq
+    - sonarcube_latest_version=$(curl -s https://api.github.com/repos/SonarSource/sonarqube/releases/latest | jq -r '.tag_name')
+    - sonarqube_zip="$DL_CACHE_DIR/sonarqube-${sonarcube_latest_version}.zip"
+    - if [ ! -f "$sonarqube_zip" ]; then
+        mkdir -p $DL_CACHE_DIR
+        echo "Downloading SonarQube version ${sonarcube_latest_version}...";
+        wget "https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-${sonarcube_latest_version}.zip" -O $DL_CACHE_DIR/sonarqube-${sonarcube_latest_version}.zip;
+      else
+        echo "SonarQube version ${sonarcube_latest_version} already downloaded.";
+      fi
+  cache:
+    paths:
+      - $DL_CACHE_DIR
+
+code-analysis-job:
+  stage: analysis
+  extends: .common_job_template
+  dependencies:
+    - download-resources-job
+  script:
+    #sonarqube tries to run as root, but due to how gitlab works it cannot, so we need to create and run it as a different user...
+    - useradd -m sonaruser || true
+
+    - apt-get update -y
+    - apt-get install -y default-jre curl unzip jq
+
+    #---install and start sonarqube server---
+    - sonarcube_latest_version=$(curl -s https://api.github.com/repos/SonarSource/sonarqube/releases/latest | jq -r '.tag_name')
+    - unzip "$DL_CACHE_DIR/sonarqube-${sonarcube_latest_version}.zip"
+    - mv "sonarqube-${sonarcube_latest_version}" sonarqube
+
+    - chown -R sonaruser:sonaruser sonarqube
+    - CURRENT_DIR=$(pwd)
+    - echo "Current Directory $CURRENT_DIR"
+    - su - sonaruser -c "cd $CURRENT_DIR/sonarqube/bin/linux-x86-64 && nohup ./sonar.sh start &"
+    - su - sonaruser -c "cd ../.."
+    #---install and start sonarqube server---
+
+    #---wait for sonarqube server to initialize by polling its api---
+    - |
+      count=0
+      until curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" "$SONARQUBE_SERVER_URL/api/system/health" | jq -r '.health' | grep -q "GREEN"; do
+        count=$((count + 1))
+        if [ "$count" -gt 60 ]; then
+          echo "SonarQube did not start within the expected time. Exiting."
+          exit 1
+        fi
+        echo "SonarQube is not ready yet. Retrying in 5 seconds..."
+        sleep 5
+      done
+    - echo "SonarQube is ready!"
+    #---wait for sonarqube server to initialize by polling its api---
+
+    #---add custom quality gate conditions to sonarqube---
+    - |
+      create_quality_gate() {
+        echo "Creating quality gate '$SONARQUBE_QUALITY_GATE_NAME'..."
+
+        response=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/qualitygates/create" -d "name=$SONARQUBE_QUALITY_GATE_NAME")
+
+        if [[ $response == *"errors"* ]]; then
+          echo "Error creating quality gate $response"
+          exit 1
+        else
+          echo "Quality gate created successfully."
+        fi
+      }
+
+      add_quality_gate_condition() {
+        local metric="$1"
+        local operator="$2"
+        local value="$3"
+
+        echo "Adding condition $metric $operator $value"
+
+        curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/qualitygates/create_condition" -d "gateName=$SONARQUBE_QUALITY_GATE_NAME" -d "metric=$metric" -d "op=$operator" -d "error=$value"
+      }
+
+      echo "Checking if quality gate '$SONARQUBE_QUALITY_GATE_NAME' exists..."
+      response=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" "$SONARQUBE_SERVER_URL/api/qualitygates/show?name=$SONARQUBE_QUALITY_GATE_NAME")
+
+      if [[ $response == *"errors"* ]]; then
+        create_quality_gate
+      else
+        echo "Quality gate '$SONARQUBE_QUALITY_GATE_NAME' already exists."
+      fi
+
+      IFS=',' read -r -a conditions <<< "$SONARQUBE_QUALITY_GATE_CONDITIONS"
+
+      for condition in "${conditions[@]}"; do
+        read -r metric operator value <<< "$condition"
+        add_quality_gate_condition "$metric" "$operator" "$value"
+      done
+    #---add custom quality gate conditions to sonarqube---
+
+    #---generate a user token to use with our tests---
+    - |
+      response_token=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/user_tokens/generate" -d "name=$SONARQUBE_TOKEN_NAME")
+      if echo "$response_token" | jq -e '.errors' > /dev/null; then
+          echo "Error generating token $(echo "$response_token" | jq -r '.errors[] | .msg')"
+          exit 1
+      fi
+
+      export SONARQUBE_TOKEN=$(echo "$response_token" | jq -r '.token')
+    #---generate a user token to use with our tests---
+
+    #--create out project---
+    - curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/projects/create" -d "project=$SONARQUBE_PROJECT_KEY&name=$SONARQUBE_PROJECT_KEY"
+    #--create out project---
+
+    #---custom sonarqube qualıty profıle to ignore warnings for static properties---
+    - |
+      #find default profile first and get the key
+      sonarway=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" "$SONARQUBE_SERVER_URL/api/qualityprofiles/search?language=cs")
+      sonarway_key=$(echo "$sonarway" | jq -r '.profiles[0].key')
+
+      #make a copy, since we cannot modify the built-in profiles
+      new_profile=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/qualityprofiles/copy" -d "fromKey=$sonarway_key&toName=$SONARQUBE_QUALITY_PROFILE_NAME")
+      new_profile_key=$(echo "$new_profile" | jq -r '.key')
+
+      curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/qualityprofiles/set_default" -d "language=cs&qualityProfile=$SONARQUBE_QUALITY_PROFILE_NAME"
+
+      #S2325: Make XYZ a static property
+      curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/qualityprofiles/deactivate_rule" -d "rule=csharpsquid:S2325&key=$new_profile_key"
+    #---custom sonarqube qualıty profıle to ignore warnings for static properties---
+
+    #---set our custom quality gate---
+    - curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" -X POST "$SONARQUBE_SERVER_URL/api/qualitygates/select" -d "gateName=$SONARQUBE_QUALITY_GATE_NAME" -d "projectKey=$SONARQUBE_PROJECT_KEY"
+    #---set our custom quality gate---
+
+    #---install and run sonarqube scanner for .net---
+    - dotnet tool install --global dotnet-sonarscanner
+    - export PATH="$PATH:$HOME/.dotnet/tools"
+    
+    - dotnet sonarscanner begin /k:"$SONARQUBE_PROJECT_KEY" /d:sonar.host.url="$SONARQUBE_SERVER_URL" /d:sonar.login="$SONARQUBE_TOKEN"
+    #must be built in between the begin and end steps.
+    - dotnet build "${APPLICATION_SOLUTION_NAME}" --configuration "${APPLICATION_CONFIGURATION}"
+    - dotnet sonarscanner end /d:sonar.login="$SONARQUBE_TOKEN"
+    #---install and run sonarqube scanner for .net---
+
+    #---wait for the code analysis to complete---
+    - |
+      task_id=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" "$SONARQUBE_SERVER_URL/api/ce/component?component=$SONARQUBE_PROJECT_KEY" | jq -r '.queue[0].id')
+
+      echo "Analysis Task ID $task_id"
+
+      status="IN_PROGRESS"
+      while [[ "$status" == "IN_PROGRESS" || "$status" == "PENDING" ]]; do
+          response=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" "$SONARQUBE_SERVER_URL/api/ce/task?id=$task_id")
+
+          status=$(echo "$response" | jq -r '.task.status')
+          echo "Current Status $status"
+
+          if [[ "$status" == "SUCCESS" ]]; then
+              echo "SonarQube analysis completed successfully."
+              break
+          elif [[ "$status" == "FAILED" ]]; then
+              echo "SonarQube analysis failed."
+              exit 1
+          fi
+
+          sleep 5
+      done
+    #---wait for the code analysis to complete---
+
+    #---check the results and print them---
+    - |
+      analysis_results=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" "$SONARQUBE_SERVER_URL/api/measures/component?component=$SONARQUBE_PROJECT_KEY&metricKeys=$SONARQUBE_METRICS")
+      response=$(curl -s -u "$SONARQUBE_USERNAME:$SONARQUBE_PASSWORD" "$SONARQUBE_SERVER_URL/api/qualitygates/project_status?projectKey=$SONARQUBE_PROJECT_KEY")
+
+      echo "----------------------------------------------"
+      echo "Analysis Results"
+      echo "----------------------------------------------"
+      echo "$analysis_results" | jq -r '.component.measures[] | "\(.metric) \(.value) \(.bestValue)"' | while read metric value bestValue; do
+        printf "Metric: %s\nValue: %s\nBest Value: %s\n--\n" "$metric" "$value" "$bestValue"
+      done
+
+      echo "----------------------------------------------"
+      echo "Quality Gates"
+      echo "----------------------------------------------"
+      echo "$response" | jq -r '.projectStatus.conditions[] | "\(.metricKey) \(.status) \(.comparator) \(.errorThreshold) \(.actualValue)"' | while read metricKey status comparator errorThreshold actualValue; do
+        printf "Metric: %s\nStatus: %s\nComparator: %s\nError Threshold: %s\nActual Value: %s\n--\n" "$metricKey" "$status" "$comparator" "$errorThreshold" "$actualValue"
+      done
+
+      status=$(echo "$response" | jq -r '.projectStatus.status')
+
+      echo "----------------------------------------------"
+      echo "Quality Gate Status: $status"
+      echo "----------------------------------------------"
+
+      su - sonaruser -c "cd $CURRENT_DIR/sonarqube/bin/linux-x86-64 && ./sonar.sh stop"
+
+      if [[ "$status" == "OK" ]]; then
+          echo "The project has passed the quality gate."
+      elif [[ "$status" == "WARN" ]]; then
+          echo "The project has warnings in the quality gate."
+      elif [[ "$status" == "ERROR" ]]; then
+          echo "The project has failed the quality gate."
+          exit 1
+      else
+          echo "Unknown status $status"
+          exit 1
+      fi
+    #---check the results and print them---
+
+  cache:
+    paths:
+      - $DL_CACHE_DIR
+   

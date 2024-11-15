@@ -1,0 +1,63 @@
+variables:
+  #---SPOTIFY SECTION---
+    SPOTIFY_USERNAME : "$Spotify_Username_Secret"
+    SPOTIFY_EMAIL    : "$Spotify_Email_Secret"
+    SPOTIFY_PASSWORD : "$Spotify_Password_Secret"
+
+    SPOTIFY_API_CLIENT_ID     : "$Spotify_API_ClientID_Secret"
+    SPOTIFY_API_CLIENT_SECRET : "$Spotify_API_ClientSecret_Secret"
+    SPOTIFY_API_REFRESH_TOKEN : "$Spotify_API_RefreshToken_Secret"
+  #---SPOTIFY SECTION---
+  #---SONARQUBE SECTION---
+    SONARQUBE_SERVER_URL        : "http://localhost:9000"
+    SONARQUBE_USERNAME          : "admin"
+    SONARQUBE_PASSWORD          : "admin"
+
+    SONARQUBE_PROJECT_KEY          : "TestApplicationDotNet"
+    SONARQUBE_TOKEN_NAME           : "MyAwesomeSonarQubeToken"
+    SONARQUBE_QUALITY_PROFILE_NAME : "CustomCSharpProfile"
+
+    SONARQUBE_METRICS           : "ncloc,complexity,violations,sqale_index,code_smells,duplicated_lines_density,vulnerabilities,bugs,coverage"
+    SONARQUBE_QUALITY_GATE_NAME : "CustomQualityGate"
+
+    SONARQUBE_QUALITY_VIOLATIONS_THRESHOLD         : 60
+    SONARQUBE_QUALITY_CODE_SMELLS_THRESHOLD        : $SONARQUBE_QUALITY_VIOLATIONS_THRESHOLD
+    SONARQUBE_QUALITY_DUP_LINES_DENSITY_THRESHOLD  : 1 #Percentage, actually
+    SONARQUBE_QUALITY_BUGS_THRESHOLD               : 0
+    SONARQUBE_QUALITY_VULNERABILITIES_THRESHOLD    : 0
+
+    SONARQUBE_QUALITY_GATE_CONDITIONS: "code_smells GT $SONARQUBE_QUALITY_CODE_SMELLS_THRESHOLD,violations GT $SONARQUBE_QUALITY_VIOLATIONS_THRESHOLD,bugs GT $SONARQUBE_QUALITY_BUGS_THRESHOLD,duplicated_lines_density GT $SONARQUBE_QUALITY_DUP_LINES_DENSITY_THRESHOLD,vulnerabilities GT $SONARQUBE_QUALITY_VULNERABILITIES_THRESHOLD"
+    #other metrics
+    #"coverage LT 80,bugs GT 0,vulnerabilities GT 0,code_smells GT 10,duplicated_lines_density GT 5,reliability_rating GT 1,security_rating GT 1,new_coverage LT 80,new_reliability_rating GT 1,new_security_rating GT 1,new_maintainability_rating GT 1"
+  #---SONARQUBE SECTION---
+
+  #---DOWNLOAD CACHE SECTION---
+    DL_CACHE_DIR: "dl_cache"
+  #---DOWNLOAD CACHE SECTION---
+  #---TEST APPLICATION SECTION---
+    APPLICATION_SOLUTION_NAME    : "TestSolution.sln"
+    APPLICATION_CONFIGURATION    : "Release"
+    
+    APPLICATION_TEST_PATH        : "$CI_PROJECT_DIR/Application.Test/bin/$APPLICATION_CONFIGURATION/net8.0/Application.Test.dll"
+    APPLICATION_TEST_CONFIG_PATH : "$CI_PROJECT_DIR/Application.Test/Configurations/test.uat.json"
+
+    APPLICATION_API_TEST_PATH        : "$CI_PROJECT_DIR/Application.Test.Api/bin/$APPLICATION_CONFIGURATION/net8.0/Application.Test.Api.dll"
+    APPLICATION_API_TEST_CONFIG_PATH : "$CI_PROJECT_DIR/Application.Test.Api/Configurations/test.uat.json"
+  #---TEST APPLICATION SECTION---
+
+  #---DRIVER SECTION---
+    DRIVER_TYPE         : "Selenium"
+    DRIVER_WAIT_TIMEOUT : 20000
+    DRIVER_POLLING_RATE : 100
+  #---DRIVER SECTION---
+  #---REPORT PORTAL SECTION---
+    REPORT_PORTAL_PROJECT                 : "alexey_nadenenko1_personal"
+    REPORT_PORTAL_API_KEY                 : "$RP_Api" #"$Spotify_ReportPortal_APIKey_Secret"
+    REPORT_PORTAL_LAUNCH_NAME             : "Spotify Application UI Tests"
+    REPORT_PORTAL_LAUNCH_DESCRIPTION      : "Test Launch of Spotify Application UI Tests"
+    REPORT_PORTAL_API_LAUNCH_NAME         : "Spotify Application API Tests"
+    REPORT_PORTAL_API_LAUNCH_DESCRIPTION  : "Test Launch of Spotify Application API Tests"
+    REPORT_PORTAL_CONFIG_SRC_PATH         : "$CI_PROJECT_DIR/Application.Test/Configurations/ReportPortalConfiguration.json"
+    REPORT_PORTAL_CONFIG_TGT_PATH         : "$CI_PROJECT_DIR/Application.Test/ReportPortal.json"
+    REPORT_PORTAL_CONFIG_API_TGT_PATH     : "$CI_PROJECT_DIR/Application.Test.Api/ReportPortal.json"
+  #---REPORT PORTAL SECTION---

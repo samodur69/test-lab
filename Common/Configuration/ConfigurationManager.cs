@@ -1,52 +1,104 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Configuration;
 
 namespace Common.Configuration;
 
-public class ConfigurationManager
+public static class ConfigurationManager
 {
-    public static readonly AppConfig AppConfig;
-    private static readonly string configFolder = "Configurations";
-    private static readonly string configName = "test.uat.json";
+    private static readonly string ConfigFolder = "Configurations";
+    private static readonly string ConfigName = "test.uat.json";
+    
+    public static readonly AppConfig AppConfig = ParseConfig(new ConfigurationBuilder()
+        .SetBasePath(AppContext.BaseDirectory)
+        .AddJsonFile(Path.Combine(ConfigFolder, ConfigName), optional: false, reloadOnChange: true)
+        .AddEnvironmentVariables()
+        .Build());
 
-    static ConfigurationManager()
+    private static AppConfig ParseConfig(IConfigurationRoot config)
     {
-        AppConfig = ParseConfig(new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile(Path.Combine(configFolder, configName), optional: false, reloadOnChange: true)
-            .AddEnvironmentVariables()
-            .Build());
-    }
+        string GetValue(string arg) => config[arg] ?? "";
 
-    private static AppConfig ParseConfig(IConfigurationRoot Config)
-    {
-        var useEnvVar = bool.Parse(Config["UseEnvironmentVars"]);
-        var maximize = bool.Parse(Config["BrowserOptions:Maximize"]);
+        var driverType = GetValue("Driver:Type");
+        var driverTimeout = int.Parse(GetValue("Driver:WaitTimeout"));
+        var driverPollingRate = int.Parse(GetValue("Driver:PollingRate"));
+        var screenshotDir = GetValue("Driver:ScreenshotPath");
 
-        var userName = useEnvVar ? Config["EnvironmentVars:Username"] : Config["Credentials:Username"];
-        var password = useEnvVar ? Config["EnvironmentVars:Password"] : Config["Credentials:Password"];
+        var loggerType = GetValue("Logging:Type");
+        var loggerFileName = GetValue("Logging:FileName");
 
-        var browserList = ((Func<List<string>>)(() => {
-            var list = new List<string>();
+        var useEnvVar = bool.Parse(GetValue("EnvironmentVars:Enable"));
+        var environmentVariables = new EnvironmentVariables();
 
-            foreach (var browser in Config.GetSection("Browsers").GetChildren()) {
-                if(browser.Value == null) continue;
-                if(!bool.Parse(browser.Value)) continue;
+        if(useEnvVar){
+            environmentVariables = new EnvironmentVariables(
+                Username : GetValue(GetValue("EnvironmentVars:Username")),
+                Email : GetValue(GetValue("EnvironmentVars:Email")),
+                Password : GetValue(GetValue("EnvironmentVars:Password")),
+                API_ClientID : GetValue(GetValue("EnvironmentVars:API_ClientID")),
+                API_ClientSecret : GetValue(GetValue("EnvironmentVars:API_ClientSecret")),
+                API_RefreshToken : GetValue(GetValue("EnvironmentVars:API_RefreshToken"))
+            );
+        }
 
-                list.Add(browser.Key);
-            }
-            return list;
-        }))();
+        var userName = GetValue("Credentials:Username");
+        var email = GetValue("Credentials:Email");
+        var password = GetValue("Credentials:Password");
+
+        var maximize = bool.Parse(GetValue("Browser:Maximize"));
+        var headless = bool.Parse(GetValue("Browser:Headless"));
+        var disableSandbox = bool.Parse(GetValue("Browser:DisableSandbox"));
+        var disableGpu = bool.Parse(GetValue("Browser:DisableGPU"));
+        var disableSharedMemory = bool.Parse(GetValue("Browser:DisableSharedMemory"));
+        var enableWindowSize = bool.Parse(GetValue("Browser:EnableWindowSize"));
+        var windowSizeX = int.Parse(GetValue("Browser:WindowSizeX"));
+        var windowSizeY = int.Parse(GetValue("Browser:WindowSizeY"));
+        var debuggerAddress = GetValue("Browser:DebuggerAddress");
+        var debuggerPort = int.Parse(GetValue("Browser:DebuggerPort"));
+        var remoteDebuggingPort = int.Parse(GetValue("Browser:RemoteDebuggingPort"));
 
         return new(
-            AppName    : Config["Application"],
-            AppVersion : Config["Version"],
-            BaseUrl    : Config["Url:Base"],
+            Url : new(
+                Base: GetValue("Url:Base"), 
+                Login: GetValue("Url:Login"), 
+                Signup: GetValue("Url:Signup"),
+                API_Base: GetValue("Url:API_Base"),
+                API_Token: GetValue("Url:API_Token")
+            ),
+            
+            Credentials : new(
+                Username : userName, 
+                Email : email,
+                Password : password
+            ),
 
-            Username : userName,
-            Password : password,
+            EnvironmentVariables : environmentVariables,
+            
+            BrowserOptions : new(
+                Browser : GetValue("Browser:Type"), 
+                Maximize : maximize,
+                Headless : headless,
+                DisableSandbox : disableSandbox,
+                DisableGPU : disableGpu,
+                DisableSharedMemory : disableSharedMemory,
+                EnableWindowSize : enableWindowSize,
+                WindowSizeX : windowSizeX,
+                WindowSizeY : windowSizeY,
+                DebuggerAddress : debuggerAddress,
+                DebuggerPort: debuggerPort,
+                RemoteDebuggingPort: remoteDebuggingPort
+            ),
 
-            Maximize : maximize,
-            Browsers : browserList
+            DriverOptions : new(
+                Type : driverType,
+                WaitTimeout : driverTimeout,
+                PollingRate : driverPollingRate,
+                ScreenshotDir : screenshotDir
+            ),
+
+            LoggerOptions : new(
+                Type : loggerType, 
+                FileName : loggerFileName
+            )
         );
     }
 }

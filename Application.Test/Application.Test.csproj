@@ -7,23 +7,39 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="TestDataCreation\" />
+    <Compile Remove="TestDataCreation\**" />
+    <EmbeddedResource Remove="TestDataCreation\**" />
+    <None Remove="TestDataCreation\**" />
   </ItemGroup>
 
   <ItemGroup>
 	<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="FluentAssertions" Version="6.12.1" />
     <PackageReference Include="NUnit" Version="4.2.2" />
+    <PackageReference Include="NUnit.ConsoleRunner" Version="3.18.3" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+    <PackageReference Include="ReportPortal.Client" Version="3.9.0" />
+    <PackageReference Include="ReportPortal.NUnit" Version="4.6.2" />
+    <PackageReference Include="ReportPortal.Shared" Version="3.9.0" />
+    <PackageReference Include="Microsoft.Playwright" Version="1.48.0" />
+    <!-- <PackageReference Include="Microsoft.Playwright.NUnit" Version="1.48.0" /> -->
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\Application.Business\Application.Business.csproj" />
+    <ProjectReference Include="..\ReportPortal.Custom\ReportPortal.Custom.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Configurations\ReportPortalConfiguration.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
     <None Update="Configurations\test.uat.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ReportPortal.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
