@@ -1,13 +1,12 @@
-﻿namespace Common.Driver;
-
-using Common.Driver.Configuration;
+﻿using Common.Driver.Configuration;
 using Common.Enums;
-
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Firefox;
-using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Chromium;
+using OpenQA.Selenium.Edge;
+using OpenQA.Selenium.Firefox;
+
+namespace Common.Driver;
 
 public static class SeleniumDriverManager
 {

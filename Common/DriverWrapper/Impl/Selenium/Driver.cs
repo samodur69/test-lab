@@ -1,19 +1,18 @@
+using System.Drawing;
+using System.Net;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;
+using Cookie = System.Net.Cookie;
+
 namespace Common.DriverWrapper.Impl.Selenium;
 
-using AppDriver = Common.Driver;
-using AppDriverSettings = Common.Driver.Configuration;
-
-using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
-using OpenQA.Selenium.Interactions;
-
-using Common.DriverWrapper;
-using System.Net;
+using AppDriver = Driver;
+using AppDriverSettings = Driver.Configuration;
 
 public class SeleniumDriver(AppDriverSettings.WebDriverConfig settings) : IDriver
 {
-    private readonly IWebDriver driver = AppDriver.SeleniumDriverManager.Create(settings);
-    private readonly AppDriverSettings.WebDriverConfig webDriverConfig = settings;
+    private readonly IWebDriver _driver = AppDriver.SeleniumDriverManager.Create(settings);
 
     public IElement FindElementByCss(string css, WaitingStrategy waitingStrategy = WaitingStrategy.NONE, string customArg0 = "", string customArg1 = "") => 
         FindWaitOnElement(new SeleniumLocator(LocatorTypes.CSS_SELECTOR, css), waitingStrategy, customArg0, customArg1);
@@ -22,24 +21,24 @@ public class SeleniumDriver(AppDriverSettings.WebDriverConfig settings) : IDrive
 
     public IElement FindElement(ILocator locator, WaitingStrategy waitingStrategy = WaitingStrategy.NONE, string customArg0 = "", string customArg1 = "") 
         => FindWaitOnElement(locator, waitingStrategy, customArg0, customArg1);
-    public IEnumerable<IElement> FindElements(ILocator locator) => driver.FindElements(LocatorConverter.Convert(locator))
-                 .Select(elem => (IElement)new SeleniumElement(elem, locator))
+    public IEnumerable<IElement> FindElements(ILocator locator) => _driver.FindElements(LocatorConverter.Convert(locator))
+                 .Select(IElement (elem) => new SeleniumElement(elem, locator))
                  .ToList();
 
     public IEnumerable<IElement> FindElementsByCss(string css) 
     {
         var locator = new SeleniumLocator().CssSelector(css);
         
-        return driver.FindElements(LocatorConverter.Convert(locator))
-                 .Select(elem => (IElement)new SeleniumElement(elem, locator))
+        return _driver.FindElements(LocatorConverter.Convert(locator))
+                 .Select(IElement (elem) => new SeleniumElement(elem, locator))
                  .ToList();
     }
     public IEnumerable<IElement> FindElementsByXPath(string xpath) 
     {
         var locator = new SeleniumLocator().XPath(xpath);
         
-        return driver.FindElements(LocatorConverter.Convert(locator))
-                 .Select(elem => (IElement)new SeleniumElement(elem, locator))
+        return _driver.FindElements(LocatorConverter.Convert(locator))
+                 .Select(IElement (elem) => new SeleniumElement(elem, locator))
                  .ToList();
     }
 
@@ -60,9 +59,9 @@ public class SeleniumDriver(AppDriverSettings.WebDriverConfig settings) : IDrive
 
         return new SeleniumElement(
             new WebDriverWait(
-                driver, 
-                TimeSpan.FromMilliseconds(webDriverConfig.WaitTimeout))
-                { PollingInterval = TimeSpan.FromMilliseconds(webDriverConfig.PollingRate) }.Until
+                _driver,
+                TimeSpan.FromMilliseconds(settings.WaitTimeout))
+                { PollingInterval = TimeSpan.FromMilliseconds(settings.PollingRate) }.Until
         (
             driver =>
             {
@@ -83,59 +82,59 @@ public class SeleniumDriver(AppDriverSettings.WebDriverConfig settings) : IDrive
             }
         ) ? foundElement! : throw lastException, locator);
     }
-    public void GoToURL(string url) => driver.Navigate().GoToUrl(url);
-    public string GetURL() => driver.Url;
+    public void GoToURL(string url) => _driver.Navigate().GoToUrl(url);
+    public string GetURL() => _driver.Url;
     public void ScrollDown(int byAmount = -1) {
-        var windowSize = driver.Manage().Window.Size;
+        var windowSize = _driver.Manage().Window.Size;
 
-        new Actions(driver)
+        new Actions(_driver)
             .ScrollByAmount(0, (byAmount == -1) ? windowSize.Height : byAmount)
             .Perform();
     }
 
     public bool SwitchToNextTab() {
-        var windowHandles = new List<string>(driver.WindowHandles);
+        var windowHandles = new List<string>(_driver.WindowHandles);
             if(windowHandles.Count <= 1)
                 return false;
 
-            driver.SwitchTo().Window(windowHandles[1]);
+            _driver.SwitchTo().Window(windowHandles[1]);
             return true;
     }
 
     public string TakeScreenshot(string testName = "")
     {
-        var screenshotDriver = driver as ITakesScreenshot ?? throw new InvalidOperationException("The Selenium driver does not support taking screenshots");
-        Screenshot screenshot = screenshotDriver.GetScreenshot();
+        var screenshotDriver = _driver as ITakesScreenshot ?? throw new InvalidOperationException("The Selenium driver does not support taking screenshots");
+        var screenshot = screenshotDriver.GetScreenshot();
 
-        string screenshotDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, webDriverConfig.ScreenshotPath);
+        var screenshotDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, settings.ScreenshotPath);
         Directory.CreateDirectory(screenshotDirectory);
         
-        string screenshotPath = Path.Combine(screenshotDirectory, $"{string.Join("_", testName.Split(Path.GetInvalidFileNameChars()))}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png");
+        var screenshotPath = Path.Combine(screenshotDirectory, $"{string.Join("_", testName.Split(Path.GetInvalidFileNameChars()))}_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.png");
         screenshot.SaveAsFile(screenshotPath);
 
         return screenshotPath;
     }
 
-    public ICollection<System.Net.Cookie> GetCookies()
+    public ICollection<Cookie> GetCookies()
     {
         CookieCollection netCookieCollection = [];
 
-        driver.Manage().Cookies.AllCookies
-                 .Select(cookie => ConvertToNetCookie(cookie))
+        _driver.Manage().Cookies.AllCookies
+                 .Select(ConvertToNetCookie)
                  .ToList()
                  .ForEach(netCookie => netCookieCollection.Add(netCookie));
 
         return netCookieCollection;
     }
 
-    public void Refresh() => driver.Navigate().Refresh();
+    public void Refresh() => _driver.Navigate().Refresh();
     
-    public void GoBack() => driver.Navigate().Back();
+    public void GoBack() => _driver.Navigate().Back();
 
     public void Close() => AppDriver.SeleniumDriverManager.Close();
-    private static System.Net.Cookie ConvertToNetCookie(OpenQA.Selenium.Cookie seleniumCookie)
+    private static Cookie ConvertToNetCookie(OpenQA.Selenium.Cookie seleniumCookie)
     {
-        var netCookie = new System.Net.Cookie
+        var netCookie = new Cookie
         {
             Name = seleniumCookie.Name,
             Value = seleniumCookie.Value,
@@ -153,16 +152,16 @@ public class SeleniumDriver(AppDriverSettings.WebDriverConfig settings) : IDrive
         return netCookie;
     }
 
-    public void MoveCursorToElement(IElement element) => new Actions(driver).MoveToElement((element as SeleniumElement)!.Element).Perform();
-    public void DragAndDropToOffset(IElement element, int x, int y) => new Actions(driver).DragAndDropToOffset((element as SeleniumElement)!.Element, x, y).Perform();
-    public void Click(int x, int y) { MoveCursorTo(x, y); new Actions(driver).Click().Perform(); }
-    public void Click(System.Drawing.Point pos) { MoveCursorTo(pos); new Actions(driver).Click().Perform(); }
-    public void ClickElement(IElement element) => new Actions(driver).Click((element as SeleniumElement)!.Element).Perform();
-    public void RightClickElement(IElement element) => new Actions(driver).ContextClick((element as SeleniumElement)!.Element).Perform();
-    public void DoubleClickElement(IElement element) => new Actions(driver).DoubleClick((element as SeleniumElement)!.Element).Perform();
-    public void DoubleClick(int x, int y) { MoveCursorTo(x, y); new Actions(driver).DoubleClick().Perform(); }
-    public void DoubleClick(System.Drawing.Point pos) { MoveCursorTo(pos); new Actions(driver).DoubleClick().Perform(); }
-    public void MoveCursorTo(System.Drawing.Point pos) => new Actions(driver).MoveToLocation(pos.X, pos.Y).Perform();
-    public void MoveCursorTo(int x, int y) => new Actions(driver).MoveToLocation(x, y).Perform();
-    public System.Drawing.Point GetElementPos(IElement element) => (element as SeleniumElement)!.Element.Location;
-};
+    public void MoveCursorToElement(IElement element) => new Actions(_driver).MoveToElement((element as SeleniumElement)!.Element).Perform();
+    public void DragAndDropToOffset(IElement element, int x, int y) => new Actions(_driver).DragAndDropToOffset((element as SeleniumElement)!.Element, x, y).Perform();
+    public void Click(int x, int y) { MoveCursorTo(x, y); new Actions(_driver).Click().Perform(); }
+    public void Click(Point pos) { MoveCursorTo(pos); new Actions(_driver).Click().Perform(); }
+    public void ClickElement(IElement element) => new Actions(_driver).Click((element as SeleniumElement)!.Element).Perform();
+    public void RightClickElement(IElement element) => new Actions(_driver).ContextClick((element as SeleniumElement)!.Element).Perform();
+    public void DoubleClickElement(IElement element) => new Actions(_driver).DoubleClick((element as SeleniumElement)!.Element).Perform();
+    public void DoubleClick(int x, int y) { MoveCursorTo(x, y); new Actions(_driver).DoubleClick().Perform(); }
+    public void DoubleClick(Point pos) { MoveCursorTo(pos); new Actions(_driver).DoubleClick().Perform(); }
+    public void MoveCursorTo(Point pos) => new Actions(_driver).MoveToLocation(pos.X, pos.Y).Perform();
+    public void MoveCursorTo(int x, int y) => new Actions(_driver).MoveToLocation(x, y).Perform();
+    public Point GetElementPos(IElement element) => (element as SeleniumElement)!.Element.Location;
+}

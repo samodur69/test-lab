@@ -10,4 +10,4 @@ public enum LocatorTypes
     PARTIAL_LINK_TEXT,
     TAG_NAME,
     CSS_SELECTOR
-};
+}

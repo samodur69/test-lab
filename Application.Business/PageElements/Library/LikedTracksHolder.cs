@@ -1,7 +1,6 @@
-namespace Application.Business.PageElements.Library;
-
-using Application.Business.PageElements.Player;
 using Application.Model.PageElements.Library;
+
+namespace Application.Business.PageElements.Library;
 
 public class LikedTracksHolder(LikedTracksHolderControl holder) : BaseElement(holder)
 {

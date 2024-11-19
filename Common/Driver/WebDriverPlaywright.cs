@@ -1,9 +1,8 @@
-namespace Common.Driver;
-
 using Common.Driver.Configuration;
 using Common.Enums;
-
 using Microsoft.Playwright;
+
+namespace Common.Driver;
 
 public static class PlaywrightManager
 {
@@ -14,10 +13,11 @@ public static class PlaywrightManager
 
     public static Context Create(WebDriverConfig settings)
     {
-        if (_context.Value != null && _context.Value.Driver != null) return new(_context.Value!.Driver!, _context.Value!.Browser!, _context.Value!.Page!);
+        if (_context.Value is { Driver: not null })
+            return new Context(_context.Value!.Driver!, _context.Value!.Browser!, _context.Value!.Page!);
 
         if(_installDepsOnce){
-            var exitCode = Microsoft.Playwright.Program.Main(new[] {"install", "--with-deps"});
+            var exitCode = Program.Main(["install", "--with-deps"]);
             if (exitCode != 0)
                 throw new InvalidOperationException($"Playwright installation exited with code {exitCode}");
             _installDepsOnce = false;
@@ -34,7 +34,7 @@ public static class PlaywrightManager
         _context.Value!.Page!.SetDefaultTimeout(settings.WaitTimeout);
         _context.Value!.Page!.SetDefaultNavigationTimeout(settings.WaitTimeout);
 
-        return new(_context.Value!.Driver!, _context.Value!.Browser!, _context.Value!.Page!);
+        return new Context(_context.Value!.Driver!, _context.Value!.Browser!, _context.Value!.Page!);
     }
     public static void GoToUrl(string url) => _context.Value?.Page?.GotoAsync(url).Wait();
     public static string? GetUrl() => _context.Value?.Page?.Url;
@@ -50,7 +50,7 @@ public static class PlaywrightManager
         var playwright = Playwright.CreateAsync().Result;
 
         var options = new BrowserTypeLaunchOptions();
-        var arg = new List<string>{};
+        var arg = new List<string>();
 
         if (settings.Maximized)
             arg.Add("--start-maximized");
@@ -112,7 +112,7 @@ public static class PlaywrightManager
         var context = browser.NewContextAsync(new BrowserNewContextOptions{ ViewportSize = ViewportSize.NoViewport }).Result;
         var page = context.NewPageAsync().Result;
 
-        return new(playwright, browser, page);
+        return new ContextHolder(playwright, browser, page);
     }
 
     private static ContextHolder CreateFirefox(WebBrowserSettings settings)
@@ -120,7 +120,7 @@ public static class PlaywrightManager
         var playwright = Playwright.CreateAsync().Result;
 
         var options = new BrowserTypeLaunchOptions();
-        var arg = new List<string>{};
+        var arg = new List<string>();
 
         if (settings.Maximized)
             arg.Add("-kiosk");
@@ -134,11 +134,11 @@ public static class PlaywrightManager
         }
 
         var browser = playwright.Firefox.LaunchAsync(options).Result; 
-        var context = browser.NewContextAsync(new BrowserNewContextOptions{  ViewportSize = new ViewportSize() { Width = settings.WindowSizeX, Height = settings.WindowSizeY } }).Result;
+        var context = browser.NewContextAsync(new BrowserNewContextOptions{  ViewportSize = new ViewportSize { Width = settings.WindowSizeX, Height = settings.WindowSizeY } }).Result;
 
         var page = context.NewPageAsync().Result;
         page.SetViewportSizeAsync(settings.WindowSizeX, settings.WindowSizeY).Wait();
 
-        return new(playwright, browser, page);
+        return new ContextHolder(playwright, browser, page);
     }
 }

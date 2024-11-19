@@ -1,5 +1,6 @@
-namespace Application.Model.PageElements.Player;
 using Common.DriverWrapper;
+
+namespace Application.Model.PageElements.Player;
 
 public class PlayerMainControl(IElement root) : BaseSliderControl(root, ProgressBarCSS, 25)
 {

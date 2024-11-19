@@ -1,6 +1,7 @@
-namespace Application.Model.PageElements.Player;
 using Common.DriverWrapper;
 using Common.Utils.Waiter;
+
+namespace Application.Model.PageElements.Player;
 
 public class PlayerHolderControl(IElement root) : BaseElementControl(root)
 {
@@ -10,5 +11,5 @@ public class PlayerHolderControl(IElement root) : BaseElementControl(root)
     public static PlayerNowPlayingControl NowPlayingControl => new(Driver.FindElementByCss(NowPlayingWidgetCSS));
     public static PlayerMainControl MainControl => new(Driver.FindElementByCss(MainPlayerControlsCSS));
     public static PlayerVolumeControl VolumeControl => new(Driver.FindElementByCss(MainPlayerVolumeControlsCSS));
-    public bool WaitForPlayerToBeReady() => Waiter.WaitUntil(() => MainControl.IsEnabled && MainControl.IsVisible);
+    public bool WaitForPlayerToBeReady() => Waiter.WaitUntil(() => MainControl is { IsEnabled: true, IsVisible: true });
 }

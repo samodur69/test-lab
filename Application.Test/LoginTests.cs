@@ -1,9 +1,8 @@
+using Application.Business.Pages;
+
 namespace Application.Test;
 
-using Business.Pages;
-
 [TestFixture]
-//[Parallelizable(ParallelScope.All)]
 public class LoginTests : TestFixtureBase
 {
     [Test, TestCaseSource(nameof(ValidEmailPassword))]
@@ -33,14 +32,14 @@ public class LoginTests : TestFixtureBase
         pages.Login.IsErrorBannerVisible().Should().BeTrue();
     }
 
-    [Test, TestCaseSource(nameof(WrongUsernameAndEmailWrongPassword))]
+    [Test, TestCaseSource(nameof(LoginTestCases.WrongUsernameAndEmailWrongPassword))]
     [Description("Login with Wrong Email or Wrong Username and Wrong Password")]
     [Category("Extended")]
     [Property("Priority", "P2")]
     public void LoginPage_Should_Fail_When_InvalidUsername_And_InvalidPassword_AreProvided(string username, string password) => 
         LoginPage_Should_Fail_When_ValidUsername_And_InvalidPassword_AreProvided(username, password);
 
-    [Test, TestCaseSource(nameof(ValidEmailUsername))]
+    [Test, TestCaseSource(nameof(LoginTestCases.ValidEmailUsername))]
     [Description("Error Message under Empty Email Field")]
     [Category("Extended")]
     [Property("Priority", "P3")]
@@ -53,7 +52,7 @@ public class LoginTests : TestFixtureBase
         pages.Login.IsEmptyUsernameErrorVisible().Should().BeTrue();
     }
 
-    [Test, TestCaseSource(nameof(ValidPassword))]
+    [Test, TestCaseSource(nameof(LoginTestCases.ValidPassword))]
     [Description("Error Message under Empty Password Field")]
     [Category("Extended")]
     [Property("Priority", "P3")]
@@ -73,7 +72,7 @@ public class LoginTests : TestFixtureBase
         var homePage = new Home();
         homePage.Open();
 
-        return new(homePage.PressLogin(), homePage);
+        return new Pages(homePage.PressLogin(), homePage);
     }
 
     private static Pages LoginBaseStep(string email, string password)
@@ -90,40 +89,21 @@ public class LoginTests : TestFixtureBase
         loginPage.EnterPassword(password);
         loginPage.PressLogin();
 
-        return new(loginPage, homePage);
+        return new Pages(loginPage, homePage);
     }
 
     private static IEnumerable<TestCaseData> ValidEmailPassword(){
-        yield return new(AppConfig.EnvironmentVariables.Email, AppConfig.EnvironmentVariables.Password);
+        yield return new TestCaseData(AppConfig.EnvironmentVariables.Email, AppConfig.EnvironmentVariables.Password);
     }
 
     private static IEnumerable<TestCaseData> ValidUsernamePassword(){
-        yield return new(AppConfig.EnvironmentVariables.Username, AppConfig.EnvironmentVariables.Password);
+        yield return new TestCaseData(AppConfig.EnvironmentVariables.Username, AppConfig.EnvironmentVariables.Password);
     }
 
     private static IEnumerable<TestCaseData> ValidUsernameAndEmailWrongPassword(){
-        yield return new(AppConfig.EnvironmentVariables.Username, "reallywrongpswd@@@aa");
-        yield return new(AppConfig.EnvironmentVariables.Email, "reallywrongpswd");
-        yield return new(AppConfig.EnvironmentVariables.Username, "1929073h5ikash@a");
-        yield return new(AppConfig.EnvironmentVariables.Email, "1929073h5ikash**444");
-    }
-
-    private static IEnumerable<TestCaseData> WrongUsernameAndEmailWrongPassword(){
-        yield return new("SfA5aS1YFEJKnTHNuusChXsSNJhA", "@323sss13");
-        yield return new("wronk_email@email.com", "$$2391470214aa");
-        yield return new("somethingsomething@bad.com", "$$2391470214aa");
-        yield return new("90123745sChXsS9132phPHWE3h6", "$$2391470214aa");
-    }
-
-    private static IEnumerable<TestCaseData> ValidEmailUsername(){
-        yield return new("SfA5aS1YFEJKnTHNuusChXsSNJhA");
-        yield return new("wronk_email@email.com");
-    }
-
-    private static IEnumerable<TestCaseData> ValidPassword(){
-        yield return new("2139128@$!$90");
-        yield return new("2194y21ihS*YQ389i6o36");
-        yield return new("2391470214aa");
-        yield return new("1902354upoJS(Y40po2n789)");
+        yield return new TestCaseData(AppConfig.EnvironmentVariables.Username, "reallywrongpswd@@@aa");
+        yield return new TestCaseData(AppConfig.EnvironmentVariables.Email, "reallywrongpswd");
+        yield return new TestCaseData(AppConfig.EnvironmentVariables.Username, "1929073h5ikash@a");
+        yield return new TestCaseData(AppConfig.EnvironmentVariables.Email, "1929073h5ikash**444");
     }
 }

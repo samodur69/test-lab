@@ -1,11 +1,9 @@
-namespace Application.Model.Pages;
-
 using Application.Model.PageElements;
-using Application.Model.PageElements.Login;
 using Application.Model.PageElements.Library;
-
-using Common.Configuration;
+using Application.Model.PageElements.Login;
 using Application.Model.PageElements.Player;
+
+namespace Application.Model.Pages;
 
 public class HomePage : ModelBase
 {

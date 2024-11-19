@@ -1,8 +1,8 @@
-namespace Application.Business.PageElements.Player;
 using Application.Model.PageElements.Player;
 using Common.Utils.ExceptionWrapper;
 using Common.Utils.Waiter;
-using Microsoft.VisualBasic;
+
+namespace Application.Business.PageElements.Player;
 
 public class PlayerMain(PlayerMainControl control) : BaseElement(control)
 {

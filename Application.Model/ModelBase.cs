@@ -1,7 +1,8 @@
-﻿using Common.DriverWrapper;
-using Common.DriverWrapper.Configuration;
+﻿using System.Net;
 using Common.Configuration;
 using Common.Driver.Configuration;
+using Common.DriverWrapper;
+using Common.DriverWrapper.Configuration;
 
 namespace Application.Model;
 
@@ -10,7 +11,7 @@ public class ModelBase
     public const int DEFAULT_TIMEOUT = 1000;
     protected static readonly AppConfig AppConfig = ConfigurationManager.AppConfig;
     private static readonly ThreadLocal<IDriver> driver = new();
-    protected static IDriver Driver { get => driver.Value!; }
+    protected static IDriver Driver => driver.Value!;
 
     public ModelBase() {
         driver.Value = DriverFactory.Create(
@@ -42,7 +43,7 @@ public class ModelBase
 
     public void OpenUrl() => Driver.GoToURL(Url);
 
-    public static ICollection<System.Net.Cookie> Cookies => Driver.GetCookies();
+    public static ICollection<Cookie> Cookies => Driver.GetCookies();
 
     public static void Refresh() => Driver.Refresh();
 

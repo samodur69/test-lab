@@ -17,4 +17,4 @@ public class SeleniumLocator : ILocator
     public ILocator PartialLinkText(string partialLinkTextToFind) => new SeleniumLocator(LocatorTypes.PARTIAL_LINK_TEXT, partialLinkTextToFind);
     public ILocator TagName(string tagNameToFind) => new SeleniumLocator(LocatorTypes.TAG_NAME, tagNameToFind);
     public ILocator CssSelector(string cssSelectorToFind) => new SeleniumLocator(LocatorTypes.CSS_SELECTOR, cssSelectorToFind);
-};
+}

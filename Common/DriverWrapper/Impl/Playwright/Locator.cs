@@ -2,16 +2,15 @@ namespace Common.DriverWrapper.Impl.Playwright;
 
 public class PlaywrightLocator : ILocator
 {
-    public PlaywrightLocator() { }
+    public LocatorTypes Mechanism { get; } = LocatorTypes.CSS_SELECTOR;
+    public string Criteria { get; } = string.Empty;
 
+    public PlaywrightLocator() { }
     public PlaywrightLocator(LocatorTypes mechanism, string criteria)
     {
         Mechanism = mechanism;
         Criteria = criteria;
     }
-
-    public LocatorTypes Mechanism { get; } = LocatorTypes.CSS_SELECTOR;
-    public string Criteria { get; } = "";
 
     public ILocator Id(string idToFind) => new PlaywrightLocator(LocatorTypes.ID, idToFind);
     public ILocator LinkText(string linkTextToFind) => new PlaywrightLocator(LocatorTypes.LINK_TEXT, linkTextToFind);

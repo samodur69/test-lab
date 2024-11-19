@@ -7,11 +7,11 @@ public static class ExceptionWrapper
         try
         {
             action();
-            return new("", "", "");
+            return new ExceptionData(string.Empty, string.Empty, string.Empty);
         }
         catch (Exception ex)
         {
-            return new(message : ex.Message ?? "", stackTrace : ex.StackTrace ?? "", source : ex.Source ?? "");
+            return new ExceptionData(message : ex.Message ?? string.Empty, stackTrace : ex.StackTrace ?? string.Empty, source : ex.Source ?? string.Empty);
         }
     }
 }

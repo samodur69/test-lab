@@ -10,7 +10,7 @@ public class InputControl(IElement root) : BaseElementControl(root)
         WaitForDomProperty("value", ""); 
     }
     public override string Text {
-        get { return Root.Text; }
+        get => Root.Text;
         set 
         { 
             Root.SendText(value); 

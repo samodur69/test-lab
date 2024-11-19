@@ -1,9 +1,8 @@
-﻿
+﻿using System.Net;
+using System.Text.Json;
 using Application.Api.Configuration;
 using Application.Api.Configurations;
 using Application.Api.TestDataCreator.Models;
-using System.Net;
-using System.Text.Json;
 
 namespace Application.Api.TestDataCreator;
 
@@ -30,7 +29,7 @@ public class ApiClient : ISpotifyRest
 
     public HttpStatusCode AddSongs(string playlistId, List<string> trackIDs)
     {
-        Dictionary<string, List<string>> queryParams = new Dictionary<string, List<string>>() { { "uris", new List<string>(trackIDs) } };
+        Dictionary<string, List<string>> queryParams = new Dictionary<string, List<string>> { { "uris", new List<string>(trackIDs) } };
         var response = RestClientUtil.PostRequest($"/playlists/{playlistId}/tracks", queryParams);
         return response.StatusCode;
     }

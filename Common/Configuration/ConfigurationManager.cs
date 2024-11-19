@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Configuration;
 
 namespace Common.Configuration;
@@ -56,8 +55,8 @@ public static class ConfigurationManager
         var debuggerPort = int.Parse(GetValue("Browser:DebuggerPort"));
         var remoteDebuggingPort = int.Parse(GetValue("Browser:RemoteDebuggingPort"));
 
-        return new(
-            Url : new(
+        return new AppConfig(
+            Url : new Url(
                 Base: GetValue("Url:Base"), 
                 Login: GetValue("Url:Login"), 
                 Signup: GetValue("Url:Signup"),
@@ -65,7 +64,7 @@ public static class ConfigurationManager
                 API_Token: GetValue("Url:API_Token")
             ),
             
-            Credentials : new(
+            Credentials : new Credentials(
                 Username : userName, 
                 Email : email,
                 Password : password
@@ -73,7 +72,7 @@ public static class ConfigurationManager
 
             EnvironmentVariables : environmentVariables,
             
-            BrowserOptions : new(
+            BrowserOptions : new BrowserOptions(
                 Browser : GetValue("Browser:Type"), 
                 Maximize : maximize,
                 Headless : headless,
@@ -88,14 +87,14 @@ public static class ConfigurationManager
                 RemoteDebuggingPort: remoteDebuggingPort
             ),
 
-            DriverOptions : new(
+            DriverOptions : new DriverOptions(
                 Type : driverType,
                 WaitTimeout : driverTimeout,
                 PollingRate : driverPollingRate,
                 ScreenshotDir : screenshotDir
             ),
 
-            LoggerOptions : new(
+            LoggerOptions : new LoggerOptions(
                 Type : loggerType, 
                 FileName : loggerFileName
             )

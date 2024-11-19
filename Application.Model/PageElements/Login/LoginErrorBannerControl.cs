@@ -4,7 +4,7 @@ namespace Application.Model.PageElements.Login;
 
 public class LoginErrorBannerControl(IElement root) : InputControl(root)
 {
-    private const string SvgErrorCSS = "svg[aria-label='Error:']";
-    private const string SpanMessageCSS = "span";
-    public bool IsError() => Root.FindElementsByCss(SvgErrorCSS).Any() && Root.FindElementsByCss(SpanMessageCSS).Any();
+    private const string SvgErrorCss = "svg[aria-label='Error:']";
+    private const string SpanMessageCss = "span";
+    public bool IsError() => Root.FindElementsByCss(SvgErrorCss).Any() && Root.FindElementsByCss(SpanMessageCss).Any();
 }

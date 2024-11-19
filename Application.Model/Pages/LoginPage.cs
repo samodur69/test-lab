@@ -1,8 +1,7 @@
-namespace Application.Model.Pages;
-
 using Application.Model.PageElements;
 using Application.Model.PageElements.Login;
-using Common.Configuration;
+
+namespace Application.Model.Pages;
 
 public class LoginPage : ModelBase
 {

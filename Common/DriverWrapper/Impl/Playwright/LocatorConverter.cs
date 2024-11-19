@@ -2,7 +2,7 @@ namespace Common.DriverWrapper.Impl.Playwright;
 
 public static class LocatorConverter
 {
-    public static string Convert(ILocator locator, Microsoft.Playwright.IPage page)
+    public static string Convert(ILocator locator)
     {
         var selector = locator.Mechanism switch
         {

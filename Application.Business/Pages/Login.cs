@@ -1,16 +1,14 @@
+using Application.Business.PageElements.Login;
+using Application.Model.Pages;
+
 namespace Application.Business.Pages;
 
-using Application.Model.Pages;
-using Application.Business.PageElements.Login;
-
-public class Login : BusinessBase
+public class Login() : BusinessBase(new LoginPage())
 {
     private LoginUsernameInput UsernameInput => new(LoginPage.Username);
     private LoginPasswordInput PasswordInput => new(LoginPage.Password);
     private LoginButton LoginButton => new(LoginPage.LoginButton);
     private LoginErrorBanner LoginErrorBanner => new(LoginPage.LoginErrorBanner);
-    public Login() : base(new LoginPage()){}
-    public Login(LoginPage loginPage) : base(loginPage){}
     public void EnterUsername(string username) => UsernameInput.Text = username;
     public void ClearUsername() => UsernameInput.Clear();
     public void EnterPassword(string password) => PasswordInput.Text = password;

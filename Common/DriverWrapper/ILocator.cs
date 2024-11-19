@@ -12,4 +12,4 @@ public interface ILocator
     ILocator PartialLinkText(string partialLinkTextToFind);
     ILocator TagName(string tagNameToFind);
     ILocator CssSelector(string cssSelectorToFind);
-};
+}

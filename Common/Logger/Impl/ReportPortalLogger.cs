@@ -1,8 +1,8 @@
-namespace Common.Logger.Impl;
-
 using ReportPortal.Shared.Execution;
 
-public class ReportPortalCustomLogger(ITestContext context) : Common.Logger.ILogger
+namespace Common.Logger.Impl;
+
+public class ReportPortalCustomLogger(ITestContext context) : ILogger
 {
     private readonly ITestContext RPContext = context;
     public void LOG_INFO(string message) => RPContext.Log.Info(message);

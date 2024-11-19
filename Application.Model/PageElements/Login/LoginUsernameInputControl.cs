@@ -1,7 +1,6 @@
 using Common.DriverWrapper;
 using Common.Utils.ExceptionWrapper;
 using Common.Utils.Waiter;
-using OpenQA.Selenium.Internal;
 
 namespace Application.Model.PageElements.Login;
 

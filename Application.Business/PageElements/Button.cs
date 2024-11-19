@@ -1,6 +1,6 @@
-namespace Application.Business.PageElements;
-
 using Application.Model.PageElements;
+
+namespace Application.Business.PageElements;
 
 public class Button(ButtonControl model) : BaseElement(model)
 {

@@ -1,5 +1,6 @@
-namespace Application.Model.PageElements.Login;
 using Common.DriverWrapper;
+
+namespace Application.Model.PageElements.Login;
 
 public class LoginButtonControl(IElement root) : ButtonControl(root)
 {

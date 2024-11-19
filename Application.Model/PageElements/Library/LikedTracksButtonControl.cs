@@ -1,5 +1,6 @@
-namespace Application.Model.PageElements.Library;
 using Common.DriverWrapper;
+
+namespace Application.Model.PageElements.Library;
 
 public class LikedTracksButtonControl(IElement root) : ButtonControl(root)
 {
@@ -7,6 +8,6 @@ public class LikedTracksButtonControl(IElement root) : ButtonControl(root)
     public new LikedTracksHolderControl Click()
     {
         base.Click();
-        return new(Driver.FindElementByCss(LikedTracksCSS));
+        return new LikedTracksHolderControl(Driver.FindElementByCss(LikedTracksCSS));
     }
 }

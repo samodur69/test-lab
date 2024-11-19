@@ -1,6 +1,6 @@
-namespace Common.Utils.RgbNormalizer;
-
 using System.Text.RegularExpressions;
+
+namespace Common.Utils.RgbNormalizer;
 
 public static partial class RgbNormalizer
 {
@@ -17,8 +17,8 @@ public static partial class RgbNormalizer
             return $"rgb({rgbaMatch.Groups[1].Value}, {rgbaMatch.Groups[2].Value}, {rgbaMatch.Groups[3].Value})";
 
         var rgbMatch = RgbRegex().Match(color);
-        if (rgbMatch.Success)
-            return color;
-        return string.Empty;
+        return rgbMatch.Success
+            ? color
+            : string.Empty;
     }
-};
+}

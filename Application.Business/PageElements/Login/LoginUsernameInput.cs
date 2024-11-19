@@ -1,5 +1,6 @@
-namespace Application.Business.PageElements.Login;
 using Application.Model.PageElements.Login;
+
+namespace Application.Business.PageElements.Login;
 
 public class LoginUsernameInput(LoginUsernameInputControl model) : Input(model)
 {

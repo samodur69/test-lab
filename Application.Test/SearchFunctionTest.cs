@@ -1,41 +1,13 @@
-﻿namespace Application.Test;
+﻿using Application.Business.Pages;
+using Application.Test.TestCaseDataExamples;
 
-using Business.Pages;
+namespace Application.Test;
 
 [TestFixture]
 public class SearchFunctionTest : TestFixtureBase
 {
-    private static IEnumerable<TestCaseData> ValidSongName() 
-    {
-        yield return new TestCaseData("Mockingbird");
-        yield return new TestCaseData("Shape of You");
-        yield return new TestCaseData("Blinding Lights");
-    }
-    private static IEnumerable<TestCaseData> ValidArtistName()
-    {
-        yield return new TestCaseData("Eminem");
-        yield return new TestCaseData("Ed Sheeran");
-        yield return new TestCaseData("Bohemian Rhapsody");
-    }
-    private static IEnumerable<TestCaseData> ValidAlbumName()
-    {
-        yield return new TestCaseData("Blurryface");
-        yield return new TestCaseData("Thriller");
-        yield return new TestCaseData("25");
-    }
-    private static IEnumerable<TestCaseData> ValidPlaylistName()
-    {
-        yield return new TestCaseData("Eminem Top 10");
-        yield return new TestCaseData("Twenty One Pilots Mix");
-        yield return new TestCaseData("Billie Eilish Mix");
-    }
-    private static IEnumerable<TestCaseData> InvalidSearch()
-    {
-        yield return new TestCaseData("Dooo!!))((");
-        yield return new TestCaseData("#$^%%#");
-        yield return new TestCaseData("ФАЫППУЙЧС");
-    }
-    [TestCaseSource(nameof(ValidSongName))]
+
+    [TestCaseSource(nameof(SearchCases.ValidSongName))]
     [Description("Search for a song")]
     [Category("Functional Test")]
     [Property("Priority", "P1")]
@@ -53,7 +25,7 @@ public class SearchFunctionTest : TestFixtureBase
 
         actualResult.Should().Be(expectedResult);
     }
-    [TestCaseSource(nameof(ValidArtistName))]
+    [TestCaseSource(nameof(SearchCases.ValidArtistName))]
     [Description("Search for an artist")]
     [Category("Functional Test")]
     [Property("Priority", "P1")]
@@ -71,7 +43,7 @@ public class SearchFunctionTest : TestFixtureBase
 
         actualResult.Should().Be(expectedResult);
     }
-    [TestCaseSource(nameof(ValidAlbumName))]
+    [TestCaseSource(nameof(SearchCases.ValidAlbumName))]
     [Description("Search for an album")]
     [Category("Functional Test")]
     [Property("Priority", "P1")]
@@ -89,7 +61,7 @@ public class SearchFunctionTest : TestFixtureBase
 
         actualResult.Should().Be(expectedResult);
     }
-    [TestCaseSource(nameof(InvalidSearch))]
+    [TestCaseSource(nameof(SearchCases.InvalidSearch))]
     [Description("Handle invalid search")]
     [Category("Negative Test")]
     [Property("Priority", "P1")]
@@ -107,7 +79,7 @@ public class SearchFunctionTest : TestFixtureBase
 
         actualResults.Should().NotContain(expectedResult);
     }
-    [TestCaseSource(nameof(ValidSongName))]
+    [TestCaseSource(nameof(SearchCases.ValidSongName))]
     [Description("Filter search results ('Songs' category)")]
     [Category("Functional Test")]
     [Property("Priority", "P2")]
@@ -128,7 +100,7 @@ public class SearchFunctionTest : TestFixtureBase
 
         actualResult.Should().Be(expectedResult);
     }
-    [TestCaseSource(nameof(ValidArtistName))]
+    [TestCaseSource(nameof(SearchCases.ValidArtistName))]
     [Description("Filter search results ('Artist' category)")]
     [Category("Functional Test")]
     [Property("Priority", "P2")]
@@ -149,7 +121,7 @@ public class SearchFunctionTest : TestFixtureBase
 
         actualResult.Should().Be(expectedResult);
     }
-    [TestCaseSource(nameof(ValidAlbumName))]
+    [TestCaseSource(nameof(SearchCases.ValidAlbumName))]
     [Description("Filter search results ('Album' category)")]
     [Category("Functional Test")]
     [Property("Priority", "P2")]
@@ -170,7 +142,7 @@ public class SearchFunctionTest : TestFixtureBase
 
         actualResult.Should().Be(expectedResult);
     }
-    [TestCaseSource(nameof(ValidPlaylistName))]
+    [TestCaseSource(nameof(SearchCases.ValidPlaylistName))]
     [Description("Filter search results ('Playlist' category)")]
     [Category("Functional Test")]
     [Property("Priority", "P2")]

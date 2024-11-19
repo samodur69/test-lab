@@ -6,8 +6,8 @@ public class BaseElementControl(IElement root) : ModelControlBase(root)
 {
     public virtual string Text
     { 
-        get { return Root.Text; } 
-        set { throw new NotImplementedException($"{nameof(BaseElementControl)} setter for Text is not implemented!"); } 
+        get => Root.Text;
+        set => throw new NotImplementedException($"{nameof(BaseElementControl)} setter for Text is not implemented!");
     }
 
     public void WaitValid(int timeout) => WaitUntilValid(timeout);

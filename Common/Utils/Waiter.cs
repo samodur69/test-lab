@@ -1,7 +1,7 @@
-namespace Common.Utils.Waiter;
-
 using System.Diagnostics;
 using Common.Configuration;
+
+namespace Common.Utils.Waiter;
 
 public static class Waiter
 {
@@ -13,12 +13,12 @@ public static class Waiter
     public static bool WaitUntil(Func<bool> condition, int timeout, int pollingRate)
     {
         var duration = TimeSpan.FromMilliseconds(timeout);
-        var duration_safeguard = TimeSpan.FromMilliseconds(SafeGuardTimeOut);
+        var durationSafeguard = TimeSpan.FromMilliseconds(SafeGuardTimeOut);
         var stopwatch = new Stopwatch();
 
         stopwatch.Start();
 
-        while (stopwatch.Elapsed < duration && stopwatch.Elapsed < duration_safeguard)
+        while (stopwatch.Elapsed < duration && stopwatch.Elapsed < durationSafeguard)
         {
             if(condition()) return true;
             

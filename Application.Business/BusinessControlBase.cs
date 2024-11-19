@@ -1,6 +1,6 @@
-namespace Application.Business;
-
 using Application.Model;
+
+namespace Application.Business;
 
 public class BusinessControlBase(ModelControlBase model) : BusinessBase(model)
 {

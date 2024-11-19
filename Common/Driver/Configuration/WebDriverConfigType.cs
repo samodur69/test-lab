@@ -1,6 +1,6 @@
-namespace Common.Driver.Configuration;
-
 using Common.Enums;
+
+namespace Common.Driver.Configuration;
 
 public record WebDriverConfig
 {

@@ -1,3 +1,6 @@
+using System.Drawing;
+using System.Net;
+
 namespace Common.DriverWrapper;
 
 public interface IDriver
@@ -50,20 +53,20 @@ public interface IDriver
     public void ScrollDown(int byAmount = -1);
     public bool SwitchToNextTab();
     public string TakeScreenshot(string testName = "");
-    public ICollection<System.Net.Cookie> GetCookies();
+    public ICollection<Cookie> GetCookies();
     public void Refresh();
     public void GoBack();
     public void Close();
-    public void Click(System.Drawing.Point pos);
+    public void Click(Point pos);
     public void Click(int x, int y);
     public void ClickElement(IElement element);
     public void RightClickElement(IElement element);
     public void DoubleClickElement(IElement element);
-    public void DoubleClick(System.Drawing.Point pos);
+    public void DoubleClick(Point pos);
     public void DoubleClick(int x, int y);
     public void MoveCursorToElement(IElement element);
     public void DragAndDropToOffset(IElement element, int x, int y);
-    public void MoveCursorTo(System.Drawing.Point pos);
+    public void MoveCursorTo(Point pos);
     public void MoveCursorTo(int x, int y);
-    public System.Drawing.Point GetElementPos(IElement element);
-};
+    public Point GetElementPos(IElement element);
+}

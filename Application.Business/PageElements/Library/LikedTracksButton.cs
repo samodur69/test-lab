@@ -1,5 +1,6 @@
-namespace Application.Business.PageElements.Library;
 using Application.Model.PageElements.Library;
+
+namespace Application.Business.PageElements.Library;
 
 public class LikedTracksButton(LikedTracksButtonControl button) : Button(button)
 {
