@@ -1,6 +1,7 @@
-namespace Application.Model.PageElements.Player;
 using Common.DriverWrapper;
 using Common.Utils.Waiter;
+
+namespace Application.Model.PageElements.Player;
 
 public abstract class BaseSliderControl(IElement root, string mainSliderCSS, int defaultStep) : BaseElementControl(root)
 {
@@ -78,7 +79,7 @@ public abstract class BaseSliderControl(IElement root, string mainSliderCSS, int
     protected virtual int ProgressToInt(string str)
     {
         string[] parts = str.Split(';');
-        string result = parts[0].Replace("%", "")
+        var result = parts[0].Replace("%", "")
                              .Replace(ProgressBarTransform, "");
 
         return (int)double.Parse(result);
@@ -88,8 +89,8 @@ public abstract class BaseSliderControl(IElement root, string mainSliderCSS, int
     {
         string[] parts = time.Split(':');
 
-        int minutes = int.Parse(parts[0]);
-        int seconds = int.Parse(parts[1]);
+        var minutes = int.Parse(parts[0]);
+        var seconds = int.Parse(parts[1]);
 
         return (minutes * 60) + seconds;
     }

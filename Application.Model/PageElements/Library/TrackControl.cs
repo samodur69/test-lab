@@ -1,6 +1,7 @@
-namespace Application.Model.PageElements.Library;
 using Common.DriverWrapper;
 using Common.Utils.RgbNormalizer;
+
+namespace Application.Model.PageElements.Library;
 
 public class TrackControl(IElement root, int index) : ButtonControl(root)
 {
@@ -9,13 +10,14 @@ public class TrackControl(IElement root, int index) : ButtonControl(root)
     private const string TrackPlayButtonCSS = "button";
     public const string PlayingColorGreen = "rgba(30, 215, 96, 1)";
     public string Title => Text;
+
     /// <summary>
     ///     The title/name of the song
     /// </summary>
     public override string Text
     {
         get => Root.FindElementByCss(TrackNameCSS).Text;
-        set { throw new NotImplementedException($"{nameof(BaseElementControl)} setter for Text should not be used!"); } 
+        set => throw new NotImplementedException($"{nameof(BaseElementControl)} setter for Text should not be used!");
     }
     public string TitleColor() => Root.FindElementByCss(TrackNameCSS).GetCssValue("color");
     public bool IsPlaying() => 
@@ -24,7 +26,7 @@ public class TrackControl(IElement root, int index) : ButtonControl(root)
     { 
         var elem = Root.FindElementByCss(TrackPlayButtonCSS);
 
-        //Double clicking on the empty space resets the timeline and begins to play the track
+        //Double-clicking on the empty space resets the timeline and begins to play the track
         Driver.DoubleClick(elem.Position.X + elem.Size.Width + 10, elem.Position.Y);
     }
 }

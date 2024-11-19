@@ -1,6 +1,6 @@
-namespace Application.Model.PageElements.Player;
 using Common.DriverWrapper;
-using Common.Utils.Waiter;
+
+namespace Application.Model.PageElements.Player;
 
 public class PlayerVolumeControl(IElement root) : BaseSliderControl(root, VolumeSliderCSS, 2)
 {

@@ -8,5 +8,5 @@ public record LoggerConfig
         LogFileName = fileName;
     }
     public readonly LoggerType LoggerType = LoggerType.NONE;
-    public readonly string LogFileName = "";
+    public readonly string LogFileName = string.Empty;
 }

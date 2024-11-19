@@ -1,7 +1,4 @@
-﻿using System.Net;
-using Application.Api.Configurations;
-using Application.Api.TestDataCreator.Models;
-using NHamcrest.Core;
+﻿using Application.Api.TestDataCreator.Models;
 
 namespace Application.Api.TestDataCreator;
 
@@ -23,9 +20,9 @@ public class TracksTestData : ITracksTestData
 
     public string[] GetRandomTracks(int numberOfTracks)
     {
-        Random random = new Random();
+        var random = new Random();
         return tracksList
-            .OrderBy(x => random.Next())
+            .OrderBy(_ => random.Next())
             .Take(numberOfTracks)
             .ToArray();
     }

@@ -1,5 +1,6 @@
-namespace Application.Business.PageElements.Player;
 using Application.Model.PageElements.Player;
+
+namespace Application.Business.PageElements.Player;
 
 public class PlayerVolume(PlayerVolumeControl control) : BaseElement(control)
 {

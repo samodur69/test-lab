@@ -1,10 +1,10 @@
 ﻿using Application.Api.Configuration;
 using Application.Api.TestDataCreator;
-using RestAssured.Request.Builders;
-
 using Common.Configuration;
 using Common.Logger;
 using Common.Logger.Configuration;
+using ReportPortal.Shared;
+using RestAssured.Request.Builders;
 
 namespace Application.Api;
 
@@ -25,7 +25,7 @@ public abstract class TestFixtureBase
     {
         RestClientUtil.ConfigureLogger(LoggerFactory.Create(
         new LoggerConfig(AppConfig.LoggerOptions.Type, AppConfig.LoggerOptions.FileName), 
-            ReportPortal.Shared.Context.Current
+            Context.Current
         ));
 
         RestClientUtil.InitializeClient();
@@ -37,7 +37,7 @@ public abstract class TestFixtureBase
             .WithContentType("application/json")
             .Build();
 
-        int maxCapacity = 6;
+        var maxCapacity = 6;
 
         testDataCreator = new TestDataSpotifyBase();
         _basePlaylistID = testDataCreator.Playlists.CreatePlaylist();

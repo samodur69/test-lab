@@ -1,12 +1,11 @@
+using Common.Enums;
+
 namespace Common.DriverWrapper.Configuration;
 
-using AppDriver = Common.Driver.Configuration;
-
-using Common.Enums;
+using AppDriver = Driver.Configuration;
 
 public record DriverConfig
 {
-    public DriverConfig() {}
     public DriverConfig(string driverType, AppDriver.WebDriverConfig driverConfig)
     {
         Enum.TryParse(driverType, true, out DriverType);

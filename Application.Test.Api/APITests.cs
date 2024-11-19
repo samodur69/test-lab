@@ -1,11 +1,9 @@
-using Application.Api.Configuration;
-using static RestAssured.Dsl;
 using System.Net;
+using Application.Api.Configuration;
 using Application.Api.Configurations;
-using Newtonsoft.Json;
 using Common.Utils.Waiter;
-using System.Xml.Linq;
-using System.Reflection;
+using static RestAssured.Dsl;
+
 namespace Application.Api;
 
 [TestFixture]
@@ -161,7 +159,7 @@ public class APITests : TestFixtureBase
             .StatusCode(HttpStatusCode.OK)
             .DeserializeTo(typeof(PlaylistItems));
 
-        for (int i = 0; i < range; i++)
+        for (var i = 0; i < range; i++)
         {
             beforeResponse.Items[start+i].Track.Id.Should().Be(afterResponse.Items[position-range+i].Track.Id);
         }
@@ -347,7 +345,7 @@ public class APITests : TestFixtureBase
     [Property("Priority", "P3")]
     public void AddCustomCoverImage()
     {
-        string base64Encoded = Convert.ToBase64String(System.IO.File.ReadAllBytes("Configurations/Images/imagecover.jpg"));
+        var base64Encoded = Convert.ToBase64String(File.ReadAllBytes("Configurations/Images/imagecover.jpg"));
 
         Given()
             .Spec(requestSpecification)

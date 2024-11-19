@@ -1,6 +1,7 @@
-namespace Application.Business.PageElements.Player;
 using Application.Model.PageElements.Player;
 using Common.Utils.Waiter;
+
+namespace Application.Business.PageElements.Player;
 
 public class ShuffleButton(ShuffleButtonControl control) : Button(control)
 {

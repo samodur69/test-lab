@@ -7,4 +7,4 @@ public enum WaitingStrategy
     TEXT,
     ATTRIBUTE,
     NONE
-};
+}

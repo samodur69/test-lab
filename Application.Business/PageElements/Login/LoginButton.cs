@@ -1,5 +1,6 @@
-namespace Application.Business.PageElements.Login;
 using Application.Model.PageElements.Login;
+
+namespace Application.Business.PageElements.Login;
 
 public class LoginButton(LoginButtonControl model) : Button(model)
 {

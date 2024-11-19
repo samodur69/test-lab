@@ -1,6 +1,7 @@
-namespace Common.DriverWrapper.Impl.Selenium;
-
+using System.Drawing;
 using OpenQA.Selenium;
+
+namespace Common.DriverWrapper.Impl.Selenium;
 
 public class SeleniumElement(IWebElement element, ILocator locator) : IElement
 {
@@ -12,26 +13,26 @@ public class SeleniumElement(IWebElement element, ILocator locator) : IElement
     public bool Enabled => Element.Enabled;
     public bool Selected => Element.Selected;
     public bool Displayed => Element.Displayed;
-    public System.Drawing.Point Position => Element.Location;
+    public Point Position => Element.Location;
     public void Clear() => Element.Clear();
     public void ClearViaKeys() => Element.SendKeys(clearFieldKeyCombo);
     public void SendText(string text) => Element.SendKeys(text);
     public void SendEnterKey() => Element.SendKeys(Keys.Enter);
     public void Submit() => Element.Submit();
     public void Click() => Element.Click();
-    public System.Drawing.Size Size => Element.Size;
+    public Size Size => Element.Size;
 
     public IElement FindElement(ILocator locator) => new SeleniumElement(Element.FindElement(LocatorConverter.Convert(locator)), locator);
 
     public IEnumerable<IElement> FindElements(ILocator locator) => Element.FindElements(LocatorConverter.Convert(locator))
-                 .Select(elem => (IElement)new SeleniumElement(elem, locator))
+                 .Select(IElement (elem) => new SeleniumElement(elem, locator))
                  .ToList();
     public IEnumerable<IElement> FindElementsByCss(string css) 
     {
         var loc = new SeleniumLocator().CssSelector(css);
         
         return Element.FindElements(LocatorConverter.Convert(loc))
-                 .Select(elem => (IElement)new SeleniumElement(elem, loc))
+                 .Select(IElement (elem) => new SeleniumElement(elem, loc))
                  .ToList();
     }
     public IEnumerable<IElement> FindElementsByXPath(string xpath) 
@@ -39,14 +40,14 @@ public class SeleniumElement(IWebElement element, ILocator locator) : IElement
         var loc = new SeleniumLocator().XPath(xpath);
         
         return Element.FindElements(LocatorConverter.Convert(loc))
-                 .Select(elem => (IElement)new SeleniumElement(elem, loc))
+                 .Select(IElement (elem) => new SeleniumElement(elem, loc))
                  .ToList();
     }
 
     public IElement FindParent() => new SeleniumElement(Element.FindElement(By.XPath("parent::*")), Locator.XPath("parent::*"));
 
     public IEnumerable<IElement> FindChildElements() => Element.FindElements(By.XPath("./*"))
-                 .Select(elem => (IElement)new SeleniumElement(elem, Locator.XPath("./*")))
+                 .Select(IElement (elem) => new SeleniumElement(elem, Locator.XPath("./*")))
                  .ToList();
 
     public IElement FindElementByCss(string css) => FindElement(new SeleniumLocator(LocatorTypes.CSS_SELECTOR, css));
@@ -55,5 +56,5 @@ public class SeleniumElement(IWebElement element, ILocator locator) : IElement
     public string GetCssValue(string propertyName) => Element.GetCssValue(propertyName);
     public string GetDomAttribute(string attributeName) => Element.GetDomAttribute(attributeName);
     public string GetDomProperty(string propertyName) => Element.GetDomProperty(propertyName);
-    public System.Drawing.Point GetElementPos() => Element.Location;
-};
+    public Point GetElementPos() => Element.Location;
+}

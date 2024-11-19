@@ -1,8 +1,7 @@
 namespace Common.Configuration;
 
-public record AppConfig
-(
-	Url Url,
+public record AppConfig(
+    Url Url,
     Credentials Credentials,
     EnvironmentVariables EnvironmentVariables,
     BrowserOptions BrowserOptions,
@@ -10,25 +9,22 @@ public record AppConfig
     LoggerOptions LoggerOptions
 );
 
-public record Url
-(
+public record Url(
     string Base,
-	string Login,
-	string Signup,
+    string Login,
+    string Signup,
     string API_Base,
     string API_Token
 );
 
-public record DriverOptions
-(
+public record DriverOptions(
     string Type,
     int WaitTimeout,
     int PollingRate,
     string ScreenshotDir
 );
 
-public record BrowserOptions
-(
+public record BrowserOptions(
     string Browser,
     bool Maximize,
     bool Headless,
@@ -43,21 +39,18 @@ public record BrowserOptions
     int RemoteDebuggingPort
 );
 
-public record LoggerOptions
-(
+public record LoggerOptions(
     string Type,
     string FileName
 );
 
-public record Credentials
-(
+public record Credentials(
     string Username,
     string Email,
     string Password
-    
 );
-public record EnvironmentVariables
-(
+
+public record EnvironmentVariables(
     string Username = "",
     string Email = "",
     string Password = "",

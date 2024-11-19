@@ -1,10 +1,9 @@
-namespace Application.Test;
-
-using Business.Pages;
+using Application.Business.Pages;
 using Common.Utils.Waiter;
 
+namespace Application.Test;
+
 [TestFixture]
-//[Parallelizable(ParallelScope.All)]
 public class PlayerTests : TestFixtureBase
 {
     private static readonly string LoginEmail = AppConfig.EnvironmentVariables.Email;

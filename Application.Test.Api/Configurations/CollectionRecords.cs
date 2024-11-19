@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using OpenQA.Selenium.DevTools.V127.DOM;
-
-namespace Application.Api.Configurations;
+﻿namespace Application.Api.Configurations;
 
 public record TokenResponse(
     string Access_token,

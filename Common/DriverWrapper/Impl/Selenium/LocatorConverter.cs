@@ -1,6 +1,6 @@
-namespace Common.DriverWrapper.Impl.Selenium;
-
 using OpenQA.Selenium;
+
+namespace Common.DriverWrapper.Impl.Selenium;
 
 public static class LocatorConverter
 {

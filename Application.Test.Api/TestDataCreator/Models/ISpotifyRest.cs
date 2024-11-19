@@ -1,5 +1,5 @@
-﻿using Application.Api.Configurations;
-using System.Net;
+﻿using System.Net;
+using Application.Api.Configurations;
 
 namespace Application.Api.TestDataCreator.Models;
 

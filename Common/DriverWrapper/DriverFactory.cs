@@ -1,9 +1,9 @@
-namespace Common.DriverWrapper;
-
-using Common.Enums;
 using Common.DriverWrapper.Configuration;
-using Common.DriverWrapper.Impl.Selenium;
 using Common.DriverWrapper.Impl.Playwright;
+using Common.DriverWrapper.Impl.Selenium;
+using Common.Enums;
+
+namespace Common.DriverWrapper;
 
 public static class DriverFactory
 {
@@ -16,4 +16,4 @@ public static class DriverFactory
             _ => throw new ArgumentException("No/wrong driver was selected!")
         };
     }
-};
+}

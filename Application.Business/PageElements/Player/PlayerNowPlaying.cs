@@ -1,8 +1,9 @@
-namespace Application.Business.PageElements.Player;
-using Application.Model.PageElements.Player;
 using Application.Business.PageElements.Library;
-using Common.Utils.Waiter;
+using Application.Model.PageElements.Player;
 using Common.Utils.ExceptionWrapper;
+using Common.Utils.Waiter;
+
+namespace Application.Business.PageElements.Player;
 
 public class PlayerNowPlaying(PlayerNowPlayingControl control) : BaseElement(control)
 {

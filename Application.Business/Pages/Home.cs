@@ -1,18 +1,16 @@
-﻿namespace Application.Business.Pages;
-
-using Application.Model.Pages;
+﻿using Application.Business.PageElements.Library;
 using Application.Business.PageElements.Login;
-using Application.Business.PageElements.Library;
 using Application.Business.PageElements.Player;
-using Application.Model;
+using Application.Model.Pages;
 using Common.Utils.ExceptionWrapper;
 using Common.Utils.Waiter;
 
-public class Home : BusinessBase
+namespace Application.Business.Pages;
+
+public class Home() : BusinessBase(new HomePage())
 {
     private LoginButton LoginButton => new(HomePage.LoginButton);
-    public Home() : base(new HomePage()) { }
-    public Home(HomePage homePage) : base(homePage) { }
+
     public Login PressLogin()
     {
         LoginButton.Click();
@@ -48,9 +46,9 @@ public class Home : BusinessBase
     }
     public void EnterSearch(string input) => HomePage.SearchField.Text = input;
     public bool IsItHomePage => (IsNavigationBarVisible && IsYourLibraryVisible && IsHomeTabVisible);
-    public bool IsNavigationBarVisible => HomePage.NavigationBar.IsVisible;
-    public bool IsYourLibraryVisible => HomePage.YourLibrary.IsVisible;
-    public bool IsHomeTabVisible => HomePage.HomeTab.IsVisible;
+    private bool IsNavigationBarVisible => HomePage.NavigationBar.IsVisible;
+    private bool IsYourLibraryVisible => HomePage.YourLibrary.IsVisible;
+    private bool IsHomeTabVisible => HomePage.HomeTab.IsVisible;
     public string SongTitle => HomePage.SongTitle;
     public string ArtistName => HomePage.Artist;
     public string AlbumName => HomePage.Album;

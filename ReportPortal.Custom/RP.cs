@@ -11,7 +11,8 @@ public class ReportPortalEventsObserver : IReportEventsObserver
 {
     private static readonly AppConfig AppConfig = ConfigurationManager.AppConfig;
     private const string Redacted = "[REDACTED]";
-    static private readonly List<string> Secrets = 
+
+    private static readonly List<string> Secrets =
     [
         AppConfig.EnvironmentVariables.Email,
         AppConfig.EnvironmentVariables.Username,
@@ -20,16 +21,16 @@ public class ReportPortalEventsObserver : IReportEventsObserver
         AppConfig.EnvironmentVariables.API_ClientSecret,
         AppConfig.EnvironmentVariables.API_RefreshToken
     ];
-    
+
     public void Initialize(IReportEventsSource reportEventsSource)
     {
         reportEventsSource.OnBeforeLogsSending += ReportEventsSource_OnBeforeLogsSending;
         reportEventsSource.OnBeforeTestStarting += ReportEventsSource_OnBeforeTestStarting;
     }
 
-    static private void ReportEventsSource_OnBeforeTestStarting(ITestReporter testReporter, BeforeTestStartingEventArgs args)
+    private static void ReportEventsSource_OnBeforeTestStarting(ITestReporter testReporter, BeforeTestStartingEventArgs args)
     {
-        foreach(var secret in Secrets)
+        foreach (var secret in Secrets)
         {
             StringBuilder name = new(args.StartTestItemRequest.Name);
             name.Replace(secret, Redacted);
@@ -37,17 +38,17 @@ public class ReportPortalEventsObserver : IReportEventsObserver
         }
     }
 
-    static private void ReportEventsSource_OnBeforeLogsSending(ILogsReporter logsReporter, BeforeLogsSendingEventArgs args)
+    private static void ReportEventsSource_OnBeforeLogsSending(ILogsReporter logsReporter, BeforeLogsSendingEventArgs args)
     {
         args.CreateLogItemRequests
-        .ToList()
-        .ForEach(req =>
-            {
-                StringBuilder text = new(req.Text);
-                foreach(var secret in Secrets)
-                    text.Replace(secret, Redacted);
-                req.Text = text.ToString();
-            }
-        );
+            .ToList()
+            .ForEach(req =>
+                {
+                    StringBuilder text = new(req.Text);
+                    foreach (var secret in Secrets)
+                        text.Replace(secret, Redacted);
+                    req.Text = text.ToString();
+                }
+            );
     }
 }

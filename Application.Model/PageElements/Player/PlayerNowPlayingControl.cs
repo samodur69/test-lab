@@ -1,5 +1,6 @@
-namespace Application.Model.PageElements.Player;
 using Common.DriverWrapper;
+
+namespace Application.Model.PageElements.Player;
 
 public class PlayerNowPlayingControl(IElement root) : BaseElementControl(root)
 {

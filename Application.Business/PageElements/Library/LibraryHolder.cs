@@ -1,5 +1,6 @@
-namespace Application.Business.PageElements.Library;
 using Application.Model.PageElements.Library;
+
+namespace Application.Business.PageElements.Library;
 
 public class LibraryHolder(LibraryHolderControl holder) : BaseElement(holder)
 {

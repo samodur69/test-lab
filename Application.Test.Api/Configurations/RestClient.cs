@@ -1,20 +1,18 @@
-﻿namespace Application.Api.Configuration;
-
+﻿using System.Net;
+using System.Text;
 using Application.Api.Configurations;
 using Common.Configuration;
 using Common.Logger;
-using Common.Logger.Configuration;
 using Newtonsoft.Json;
 using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Net;
+
+namespace Application.Api.Configuration;
 
 public static class RestClientUtil
 {
     static readonly AppConfig AppConfig = ConfigurationManager.AppConfig;
-    private static readonly ThreadLocal<Common.Logger.ILogger> Logger = new();
-    private static Common.Logger.ILogger Report {get => Logger.Value!; }
+    private static readonly ThreadLocal<ILogger> Logger = new();
+    private static ILogger Report => Logger.Value!;
     private static RestClient client = new();
     public static RestClient Client => client;
     private static string baseUrl = AppConfig.Url.API_Base;
@@ -23,7 +21,7 @@ public static class RestClientUtil
     public static string BaseUrl => baseUrl;
     public static string AccessToken => _accessToken;
     public static string User_id => user_id;
-    public static void ConfigureLogger(Common.Logger.ILogger logger) => Logger.Value = logger;
+    public static void ConfigureLogger(ILogger logger) => Logger.Value = logger;
     public static void InitializeClient()
     {
         RefreshToken();
@@ -65,7 +63,7 @@ public static class RestClientUtil
 
     public static RestResponse PostRequest(string addURL, Dictionary<string, List<string>>? queryParams = null, object? body = null)
     {
-        var headers = new Dictionary<string, string>() { {"Content-Type", "application/json"} };
+        var headers = new Dictionary<string, string> { {"Content-Type", "application/json"} };
 
         return ExecuteRequest(addURL, Method.Post, headers, queryParams, body);
     }
@@ -86,7 +84,7 @@ public static class RestClientUtil
         var request = new RestRequest("/token",Method.Post);
 
         var credentials = $"{AppConfig.EnvironmentVariables.API_ClientID}:{AppConfig.EnvironmentVariables.API_ClientSecret}";
-        var base64Credentials = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(credentials));
+        var base64Credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials));
 
         request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
         request.AddHeader("Authorization", "Basic " + base64Credentials);

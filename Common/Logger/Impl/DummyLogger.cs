@@ -1,6 +1,6 @@
 namespace Common.Logger.Impl;
 
-public class DummyLogger : Common.Logger.ILogger
+public class DummyLogger : ILogger
 {
     public void LOG_INFO(string message) {}
     public void LOG_WARN(string message) {}

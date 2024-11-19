@@ -6,4 +6,4 @@ public enum LoggerType
     CONSOLE,
     REPORT_PORTAL,
     NONE
-};
+}
